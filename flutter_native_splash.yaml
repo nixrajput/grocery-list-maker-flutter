@@ -1,0 +1,18 @@
+flutter_native_splash:
+  color: "#DCDCDC"
+  color_dark: "#14141E"
+
+  image: assets/splash.png
+  image_dark: assets/splash_dark.png
+
+  branding: assets/brand.png
+  branding_mode: bottom
+
+  android_gravity: center
+  ios_content_mode: center
+  web_image_mode: center
+
+  fullscreen: true
+
+  # flutter pub run flutter_native_splash:create
+  # flutter pub run flutter_native_splash:remove

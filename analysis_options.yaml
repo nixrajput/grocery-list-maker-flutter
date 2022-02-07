@@ -1,0 +1,34 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  enable-experiment:
+    - non-nullable
+
+  language:
+    strict-raw-types: true
+
+errors:
+  dead_code: error
+  missing_required_param: error
+  override_on_non_overriding_method: error
+  unused_element: error
+  unused_import: error
+  unused_local_variable: error
+
+linter:
+  rules:
+    - avoid_empty_else
+    - avoid_function_literals_in_foreach_calls
+    - avoid_init_to_null
+    - avoid_null_checks_in_equality_operators
+    - avoid_relative_lib_imports
+    - avoid_renaming_method_parameters
+    - avoid_return_types_on_setters
+    - avoid_returning_null_for_void
+    - avoid_shadowing_type_parameters
+    - avoid_single_cascade_in_expression_statements
+    - avoid_types_as_parameter_names
+    - avoid_unused_constructor_parameters
+    - await_only_futures
+    - camel_case_types
+    - cancel_subscriptions
