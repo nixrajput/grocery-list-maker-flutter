@@ -204,7 +204,7 @@ class _AddEditListPageState extends State<AddEditListPage> {
                           widget.initialItem != null
                               ? "Edit List"
                               : "Add New List",
-                          style: GoogleFonts.pollerOne(
+                          style: GoogleFonts.rowdies(
                             textStyle: const TextStyle(
                               fontSize: 24.0,
                               fontWeight: FontWeight.w400,

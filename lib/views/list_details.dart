@@ -35,259 +35,254 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
 
     return Scaffold(
       body: SafeArea(
-        child: SizedBox(
-          width: deviceSize.width,
-          height: deviceSize.height,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  top: 8.0,
-                  bottom: 8.0,
-                  left: 16.0,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(
-                            Icons.arrow_back,
-                            size: 28.0,
-                          ),
-                          padding: const EdgeInsets.all(0.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 8.0,
+                bottom: 8.0,
+                left: 16.0,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          size: 28.0,
                         ),
-                        PopupMenuButton(
-                          padding: const EdgeInsets.all(0.0),
-                          onSelected: (value) async {
-                            if (value == 0) {
-                              await showDialog(
-                                  barrierDismissible: false,
-                                  context: context,
-                                  builder: (ctx) {
-                                    return AlertDialog(
-                                      title: const Text("Enter Details"),
-                                      content: SingleChildScrollView(
-                                        child: ListBody(
-                                          children: [
-                                            TextFormField(
-                                              decoration: const InputDecoration(
-                                                labelText: 'Name',
-                                              ),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  _name = value;
-                                                });
-                                              },
-                                              controller: _nameTextController,
-                                              textCapitalization:
-                                                  TextCapitalization.words,
+                        padding: const EdgeInsets.all(0.0),
+                      ),
+                      PopupMenuButton(
+                        padding: const EdgeInsets.all(0.0),
+                        onSelected: (value) async {
+                          if (value == 0) {
+                            await showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (ctx) {
+                                  return AlertDialog(
+                                    title: const Text("Enter Details"),
+                                    content: SingleChildScrollView(
+                                      child: ListBody(
+                                        children: [
+                                          TextFormField(
+                                            decoration: const InputDecoration(
+                                              labelText: 'Name',
                                             ),
-                                            TextFormField(
-                                              decoration: const InputDecoration(
-                                                labelText: 'Address',
-                                              ),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  _address = value;
-                                                });
-                                              },
-                                              controller:
-                                                  _addressTextController,
-                                              keyboardType:
-                                                  TextInputType.multiline,
-                                              maxLines: 3,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _name = value;
+                                              });
+                                            },
+                                            controller: _nameTextController,
+                                            textCapitalization:
+                                                TextCapitalization.words,
+                                          ),
+                                          TextFormField(
+                                            decoration: const InputDecoration(
+                                              labelText: 'Address',
                                             ),
-                                          ],
-                                        ),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _address = value;
+                                              });
+                                            },
+                                            controller: _addressTextController,
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            maxLines: 3,
+                                          ),
+                                        ],
                                       ),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(ctx, false);
-                                          },
-                                          child: const Text('CANCEL'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(ctx, true);
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (_) {
-                                                  return PdfPreviewPage(
-                                                    data: items,
-                                                    name: _name,
-                                                    address: _address,
-                                                  );
-                                                },
-                                              ),
-                                            );
-                                          },
-                                          child: const Text('CONTINUE'),
-                                        ),
-                                      ],
-                                    );
-                                  });
-                            }
-                          },
-                          itemBuilder: (ctx) {
-                            return [
-                              const PopupMenuItem(
-                                value: 0,
-                                child: PopUpMenuTile(
-                                  title: 'Export PDF',
-                                  icon: Icons.picture_as_pdf,
-                                ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(ctx, false);
+                                        },
+                                        child: const Text('CANCEL'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(ctx, true);
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) {
+                                                return PdfPreviewPage(
+                                                  data: items,
+                                                  name: _name,
+                                                  address: _address,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
+                                        child: const Text('CONTINUE'),
+                                      ),
+                                    ],
+                                  );
+                                });
+                          }
+                        },
+                        itemBuilder: (ctx) {
+                          return [
+                            const PopupMenuItem(
+                              value: 0,
+                              child: PopUpMenuTile(
+                                title: 'Export PDF',
+                                icon: Icons.picture_as_pdf,
                               ),
-                              const PopupMenuItem(
-                                value: 1,
-                                child: PopUpMenuTile(
-                                  title: 'Delete List',
-                                  icon: Icons.delete_forever,
-                                ),
+                            ),
+                            const PopupMenuItem(
+                              value: 1,
+                              child: PopUpMenuTile(
+                                title: 'Delete List',
+                                icon: Icons.delete_forever,
                               ),
-                            ];
-                          },
-                          icon: const Icon(
-                            Icons.more_vert,
-                            size: 24.0,
-                          ),
+                            ),
+                          ];
+                        },
+                        icon: const Icon(
+                          Icons.more_vert,
+                          size: 24.0,
                         ),
-                      ],
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(left: 12.0),
-                      child: Text(
-                        widget.initialItem.title.v!,
-                        style: GoogleFonts.pollerOne(
-                          textStyle: const TextStyle(
-                            fontSize: 24.0,
-                            fontWeight: FontWeight.w400,
-                            overflow: TextOverflow.clip,
-                          ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(left: 12.0),
+                    child: Text(
+                      widget.initialItem.title.v!,
+                      style: GoogleFonts.rowdies(
+                        textStyle: const TextStyle(
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.w500,
+                          overflow: TextOverflow.clip,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16.0),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: StreamBuilder<List<GroceryItem?>>(
-                    stream: groceryProvider.onGroceryItems(
-                      listId: _groceryListId,
-                    ),
-                    builder: (ctx, snapshot) {
-                      var items = snapshot.data;
-                      this.items = items;
-                      if (items == null) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      if (items.isEmpty) {
+            ),
+            const SizedBox(height: 16.0),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: StreamBuilder<List<GroceryItem?>>(
+                  stream: groceryProvider.onGroceryItems(
+                    listId: _groceryListId,
+                  ),
+                  builder: (ctx, snapshot) {
+                    var items = snapshot.data;
+                    this.items = items;
+                    if (items == null) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if (items.isEmpty) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SvgPicture.asset(
+                            "assets/empty_cart.svg",
+                            width: deviceSize.width * 0.75,
+                          ),
+                          const SizedBox(height: 20.0),
+                          Text(
+                            "No items. List is empty.",
+                            style: GoogleFonts.montserrat(
+                              color: Colors.grey,
+                              fontSize: 20.0,
+                            ),
+                          )
+                        ],
+                      );
+                    }
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (ctx, i) {
+                        var item = items[i]!;
                         return Column(
                           mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SvgPicture.asset(
-                              "assets/empty_cart.svg",
-                              width: deviceSize.width * 0.75,
+                            GroceryItemCard(
+                              title: item.title.v ?? '',
+                              description: item.description.v ?? '',
+                              quantity: item.quantity.v ?? '',
+                              onEditBtn: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) {
+                                      return AddEditItemPage(
+                                        initialItem: item,
+                                        groceryListId: _groceryListId,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              onDeleteBtn: () async {
+                                if (await showDialog(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (ctx) {
+                                          return AlertDialog(
+                                            title: const Text("Delete Item?"),
+                                            content: SingleChildScrollView(
+                                              child: ListBody(
+                                                children: const [
+                                                  Text(
+                                                      "Tap YES to confirm item deletion."),
+                                                ],
+                                              ),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(ctx, true);
+                                                },
+                                                child: const Text('YES'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(ctx, false);
+                                                },
+                                                child: const Text('NO'),
+                                              ),
+                                            ],
+                                          );
+                                        }) ??
+                                    false) {
+                                  await groceryProvider
+                                      .deleteGroceryItem(item.id.v);
+                                }
+                              },
                             ),
-                            const SizedBox(height: 20.0),
-                            Text(
-                              "No items. List is empty.",
-                              style: GoogleFonts.montserrat(
-                                color: Colors.grey,
-                                fontSize: 20.0,
-                              ),
-                            )
+                            if (i != (items.length - 1))
+                              const SizedBox(height: 8.0),
                           ],
                         );
-                      }
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const BouncingScrollPhysics(),
-                        itemBuilder: (ctx, i) {
-                          var item = items[i]!;
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              GroceryItemCard(
-                                title: item.title.v ?? '',
-                                description: item.description.v ?? '',
-                                quantity: item.quantity.v ?? '',
-                                onEditBtn: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) {
-                                        return AddEditItemPage(
-                                          initialItem: item,
-                                          groceryListId: _groceryListId,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                                onDeleteBtn: () async {
-                                  if (await showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (ctx) {
-                                            return AlertDialog(
-                                              title: const Text("Delete Item?"),
-                                              content: SingleChildScrollView(
-                                                child: ListBody(
-                                                  children: const [
-                                                    Text(
-                                                        "Tap YES to confirm item deletion."),
-                                                  ],
-                                                ),
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(ctx, true);
-                                                  },
-                                                  child: const Text('YES'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(ctx, false);
-                                                  },
-                                                  child: const Text('NO'),
-                                                ),
-                                              ],
-                                            );
-                                          }) ??
-                                      false) {
-                                    await groceryProvider
-                                        .deleteGroceryItem(item.id.v);
-                                  }
-                                },
-                              ),
-                              if (i != (items.length - 1))
-                                const SizedBox(height: 8.0),
-                            ],
-                          );
-                        },
-                        itemCount: items.length,
-                      );
-                    },
-                  ),
+                      },
+                      itemCount: items.length,
+                    );
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(

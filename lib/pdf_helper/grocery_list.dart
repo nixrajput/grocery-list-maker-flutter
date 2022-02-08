@@ -64,14 +64,14 @@ class GroceryListPdf {
             await PdfGoogleFonts.robotoRegular(),
             await PdfGoogleFonts.robotoBold(),
             await PdfGoogleFonts.robotoItalic(),
+            await PdfGoogleFonts.hindRegular(),
+            await PdfGoogleFonts.openSansRegular(),
           ),
           header: (ctx) => _buildHeader(ctx),
           footer: (ctx) => _buildFooter(ctx, _logoImage, _brandImage),
           build: (context) => [
-                //_contentHeader(context),
                 _contentTable(context),
                 pw.SizedBox(height: 20.0),
-                //_contentFooter(context)
               ]),
     );
 
@@ -83,14 +83,16 @@ class GroceryListPdf {
     pw.Font base,
     pw.Font bold,
     pw.Font italic,
+    pw.Font fallbackFont1,
+    pw.Font fallbackFont2,
   ) {
     return pw.PageTheme(
       pageFormat: pageFormat,
       theme: pw.ThemeData.withFont(
-        base: base,
-        bold: bold,
-        italic: italic,
-      ),
+          base: base,
+          bold: bold,
+          italic: italic,
+          fontFallback: [fallbackFont1, fallbackFont2]),
     );
   }
 

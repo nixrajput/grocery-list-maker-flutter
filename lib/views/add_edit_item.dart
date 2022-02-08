@@ -228,7 +228,7 @@ class _AddEditItemPageState extends State<AddEditItemPage> {
                         margin: const EdgeInsets.only(left: 12.0),
                         child: Text(
                           widget.initialItem != null ? "Edit Item" : "Add Item",
-                          style: GoogleFonts.pollerOne(
+                          style: GoogleFonts.rowdies(
                             textStyle: const TextStyle(
                               fontSize: 24.0,
                               fontWeight: FontWeight.w400,

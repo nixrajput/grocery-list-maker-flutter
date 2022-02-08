@@ -45,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       margin: const EdgeInsets.only(left: 12.0),
                       child: Text(
                         "Settings",
-                        style: GoogleFonts.pollerOne(
+                        style: GoogleFonts.rowdies(
                           textStyle: const TextStyle(
                             fontSize: 24.0,
                             fontWeight: FontWeight.w400,
