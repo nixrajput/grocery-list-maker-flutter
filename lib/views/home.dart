@@ -76,23 +76,26 @@ class HomePage extends StatelessWidget {
                       );
                     }
                     if (items.isEmpty) {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            "assets/empty_cart.svg",
-                            width: _deviceSize.width * 0.75,
-                          ),
-                          const SizedBox(height: 20.0),
-                          Text(
-                            "No lists.",
-                            style: GoogleFonts.montserrat(
-                              color: Colors.grey,
-                              fontSize: 20.0,
+                      return SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              "assets/empty_cart.svg",
+                              width: _deviceSize.width * 0.75,
+                              height: _deviceSize.height * 0.5,
                             ),
-                          )
-                        ],
+                            const SizedBox(height: 20.0),
+                            Text(
+                              "No lists.",
+                              style: GoogleFonts.montserrat(
+                                color: Colors.grey,
+                                fontSize: 20.0,
+                              ),
+                            )
+                          ],
+                        ),
                       );
                     }
                     return ListView.builder(
@@ -144,22 +147,22 @@ class HomePage extends StatelessWidget {
                                                 child: ListBody(
                                                   children: const [
                                                     Text(
-                                                        "Tap YES to confirm item deletion."),
+                                                        "Tap YES to delete the list."),
                                                   ],
                                                 ),
                                               ),
                                               actions: [
                                                 TextButton(
                                                   onPressed: () {
-                                                    Navigator.pop(ctx, true);
-                                                  },
-                                                  child: const Text('YES'),
-                                                ),
-                                                TextButton(
-                                                  onPressed: () {
                                                     Navigator.pop(ctx, false);
                                                   },
                                                   child: const Text('NO'),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.pop(ctx, true);
+                                                  },
+                                                  child: const Text('YES'),
                                                 ),
                                               ],
                                             );

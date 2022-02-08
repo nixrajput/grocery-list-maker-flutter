@@ -15,12 +15,14 @@ class PdfPreviewPage extends StatefulWidget {
   final List<GroceryItem?>? data;
   final String? name;
   final String? address;
+  final String? title;
 
   const PdfPreviewPage({
     Key? key,
     required this.data,
     this.name,
     this.address,
+    this.title,
   }) : super(key: key);
 
   @override
@@ -101,7 +103,7 @@ class _PdfPreviewPageState extends State<PdfPreviewPage> {
             "Letter": PdfPageFormat.letter,
             "A3": PdfPageFormat.a3
           },
-          build: (format) => const Example(
+          build: (format) => const PdfLayout(
             'List',
             'grocery_list.dart',
             generateGroceryList,
@@ -111,6 +113,7 @@ class _PdfPreviewPageState extends State<PdfPreviewPage> {
               name: widget.name,
               address: widget.address,
               items: widget.data,
+              title: widget.title,
             ),
           ),
           onPrinted: _showPrintedToast,

@@ -13,6 +13,7 @@ Future<Uint8List> generateGroceryList(
   PdfData data,
 ) async {
   final groceryList = GroceryListPdf(
+    title: data.title ?? '',
     customerName: data.name ?? '',
     customerAddress: data.address ?? '',
     items: data.items,
@@ -31,6 +32,7 @@ String _formatDate(DateTime date) {
 class GroceryListPdf {
   final String customerName;
   final String customerAddress;
+  final String title;
   final List<GroceryItem?>? items;
 
   final PdfColor baseColor;
@@ -40,6 +42,7 @@ class GroceryListPdf {
   static const _lightColor = PdfColors.white;
 
   GroceryListPdf({
+    required this.title,
     required this.customerName,
     required this.baseColor,
     required this.accentColor,
@@ -102,7 +105,7 @@ class GroceryListPdf {
         pw.Container(
           alignment: pw.Alignment.center,
           child: pw.Text(
-            'Grocery List',
+            title,
             style: pw.TextStyle(
               color: baseColor,
               fontWeight: pw.FontWeight.bold,

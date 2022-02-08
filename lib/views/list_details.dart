@@ -23,11 +23,21 @@ class ListDetailsPage extends StatefulWidget {
 class _ListDetailsPageState extends State<ListDetailsPage> {
   int get _groceryListId => widget.initialItem.id.v!;
   TextEditingController? _nameTextController;
+  TextEditingController? _titleTextController;
   TextEditingController? _addressTextController;
   List<GroceryItem?>? items;
 
   String _name = '';
   String _address = '';
+  String _title = '';
+
+  @override
+  void dispose() {
+    _titleTextController?.dispose();
+    _nameTextController?.dispose();
+    _addressTextController?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +76,32 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         onSelected: (value) async {
                           if (value == 0) {
                             await showDialog(
-                                barrierDismissible: false,
                                 context: context,
+                                barrierDismissible: false,
                                 builder: (ctx) {
                                   return AlertDialog(
                                     title: const Text("Enter Details"),
+                                    actionsPadding: const EdgeInsets.symmetric(
+                                      vertical: 16.0,
+                                      horizontal: 16.0,
+                                    ),
                                     content: SingleChildScrollView(
                                       child: ListBody(
                                         children: [
+                                          TextFormField(
+                                            decoration: const InputDecoration(
+                                              labelText: 'Title',
+                                            ),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _title = value;
+                                              });
+                                            },
+                                            controller: _titleTextController,
+                                            textCapitalization:
+                                                TextCapitalization.words,
+                                          ),
+                                          const SizedBox(height: 8.0),
                                           TextFormField(
                                             decoration: const InputDecoration(
                                               labelText: 'Name',
@@ -87,6 +115,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                             textCapitalization:
                                                 TextCapitalization.words,
                                           ),
+                                          const SizedBox(height: 8.0),
                                           TextFormField(
                                             decoration: const InputDecoration(
                                               labelText: 'Address',
@@ -99,7 +128,6 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                             controller: _addressTextController,
                                             keyboardType:
                                                 TextInputType.multiline,
-                                            maxLines: 3,
                                           ),
                                         ],
                                       ),
@@ -111,7 +139,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                         },
                                         child: const Text('CANCEL'),
                                       ),
-                                      TextButton(
+                                      ElevatedButton(
                                         onPressed: () {
                                           Navigator.pop(ctx, true);
                                           Navigator.of(context).push(
@@ -121,6 +149,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                                   data: items,
                                                   name: _name,
                                                   address: _address,
+                                                  title: _title,
                                                 );
                                               },
                                             ),
@@ -131,6 +160,43 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                     ],
                                   );
                                 });
+                          }
+                          if (value == 1) {
+                            if (await showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (ctx) {
+                                      return AlertDialog(
+                                        title: const Text("Delete List?"),
+                                        content: SingleChildScrollView(
+                                          child: ListBody(
+                                            children: const [
+                                              Text(
+                                                  "Tap YES to delete the list."),
+                                            ],
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(ctx, false);
+                                            },
+                                            child: const Text('NO'),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(ctx, true);
+                                            },
+                                            child: const Text('YES'),
+                                          ),
+                                        ],
+                                      );
+                                    }) ??
+                                false) {
+                              await groceryProvider
+                                  .deleteGroceryListItem(_groceryListId);
+                              Navigator.pop(context);
+                            }
                           }
                         },
                         itemBuilder: (ctx) {
@@ -191,23 +257,26 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                       );
                     }
                     if (items.isEmpty) {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            "assets/empty_cart.svg",
-                            width: deviceSize.width * 0.75,
-                          ),
-                          const SizedBox(height: 20.0),
-                          Text(
-                            "No items. List is empty.",
-                            style: GoogleFonts.montserrat(
-                              color: Colors.grey,
-                              fontSize: 20.0,
+                      return SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              "assets/empty_cart.svg",
+                              width: deviceSize.width * 0.75,
+                              height: deviceSize.height * 0.5,
                             ),
-                          )
-                        ],
+                            const SizedBox(height: 20.0),
+                            Text(
+                              "No items. List is empty.",
+                              style: GoogleFonts.montserrat(
+                                color: Colors.grey,
+                                fontSize: 20.0,
+                              ),
+                            )
+                          ],
+                        ),
                       );
                     }
                     return ListView.builder(
@@ -245,22 +314,22 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                               child: ListBody(
                                                 children: const [
                                                   Text(
-                                                      "Tap YES to confirm item deletion."),
+                                                      "Tap YES to delete the item."),
                                                 ],
                                               ),
                                             ),
                                             actions: [
                                               TextButton(
                                                 onPressed: () {
-                                                  Navigator.pop(ctx, true);
-                                                },
-                                                child: const Text('YES'),
-                                              ),
-                                              TextButton(
-                                                onPressed: () {
                                                   Navigator.pop(ctx, false);
                                                 },
                                                 child: const Text('NO'),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(ctx, true);
+                                                },
+                                                child: const Text('YES'),
                                               ),
                                             ],
                                           );
@@ -297,9 +366,9 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
               );
             }));
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.add,
-            size: deviceSize.width * 0.1,
+            size: 32.0,
             color: lightColor,
           ),
           padding: const EdgeInsets.all(0.0),

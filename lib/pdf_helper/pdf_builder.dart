@@ -6,8 +6,8 @@ import 'package:pdf/pdf.dart';
 typedef LayoutCallbackWithData = Future<Uint8List> Function(
     PdfPageFormat pageFormat, PdfData data);
 
-class Example {
-  const Example(this.name, this.file, this.builder, [this.needsData = false]);
+class PdfLayout {
+  const PdfLayout(this.name, this.file, this.builder, [this.needsData = false]);
 
   final String name;
 
