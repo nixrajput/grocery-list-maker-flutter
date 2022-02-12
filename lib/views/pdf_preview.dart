@@ -90,34 +90,63 @@ class _PdfPreviewPageState extends State<PdfPreviewPage> {
 
     return Scaffold(
       body: SafeArea(
-        child: PdfPreview(
-          canDebug: false,
-          maxPageWidth: deviceSize.width,
-          actions: actions,
-          shouldRepaint: true,
-          pdfFileName: 'list.pdf',
-          loadingWidget: const CircularProgressIndicator(),
-          initialPageFormat: PdfPageFormat.a4,
-          pageFormats: const {
-            "A4": PdfPageFormat.a4,
-            "Letter": PdfPageFormat.letter,
-            "A3": PdfPageFormat.a3
-          },
-          build: (format) => const PdfLayout(
-            'List',
-            'grocery_list.dart',
-            generateGroceryList,
-          ).builder(
-            format,
-            PdfData(
-              name: widget.name,
-              address: widget.address,
-              items: widget.data,
-              title: widget.title,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 8.0,
+                bottom: 8.0,
+                left: 12.0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(
+                      Icons.arrow_back,
+                      size: 28.0,
+                    ),
+                    padding: const EdgeInsets.all(0.0),
+                  ),
+                ],
+              ),
             ),
-          ),
-          onPrinted: _showPrintedToast,
-          onShared: _showSharedToast,
+            Expanded(
+              child: PdfPreview(
+                canDebug: false,
+                maxPageWidth: deviceSize.width,
+                actions: actions,
+                shouldRepaint: true,
+                pdfFileName: 'list.pdf',
+                loadingWidget: const CircularProgressIndicator(),
+                initialPageFormat: PdfPageFormat.a4,
+                pageFormats: const {
+                  "A4": PdfPageFormat.a4,
+                  "Letter": PdfPageFormat.letter,
+                  "A3": PdfPageFormat.a3
+                },
+                build: (format) => const PdfLayout(
+                  'List',
+                  'grocery_list.dart',
+                  generateGroceryList,
+                ).builder(
+                  format,
+                  PdfData(
+                    name: widget.name,
+                    address: widget.address,
+                    items: widget.data,
+                    title: widget.title,
+                  ),
+                ),
+                onPrinted: _showPrintedToast,
+                onShared: _showSharedToast,
+              ),
+            ),
+          ],
         ),
       ),
     );

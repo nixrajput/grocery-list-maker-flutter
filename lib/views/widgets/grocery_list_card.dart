@@ -5,10 +5,8 @@ import 'package:intl/intl.dart';
 
 class GroceryListCard extends StatelessWidget {
   final String title;
-  final String? description;
   final String? quantity;
   final String? addedAt;
-  final Color? color;
   final VoidCallback? onViewBtn;
   final VoidCallback? onEditBtn;
   final VoidCallback? onDeleteBtn;
@@ -16,10 +14,8 @@ class GroceryListCard extends StatelessWidget {
   const GroceryListCard({
     Key? key,
     required this.title,
-    this.description,
     this.quantity,
     this.addedAt,
-    this.color,
     this.onViewBtn,
     this.onEditBtn,
     this.onDeleteBtn,
@@ -32,88 +28,106 @@ class GroceryListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: onViewBtn,
       child: Container(
-        padding: const EdgeInsets.fromLTRB(12.0, 4.0, 0.0, 4.0),
-        decoration: BoxDecoration(
-          color: color ?? Colors.redAccent,
-          borderRadius: const BorderRadius.all(
-            Radius.circular(6.0),
-          ),
+        padding: const EdgeInsets.only(
+          top: 4.0,
+          left: 4.0,
+          bottom: 4.0,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              flex: 8,
+              child: Row(
                 children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.poppins(
-                      textStyle: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 24.0,
-                        overflow: TextOverflow.clip,
-                      ),
+                  Container(
+                    margin: const EdgeInsets.only(right: 16.0),
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade600.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(100.0),
+                    ),
+                    child: Image.asset(
+                      "assets/wishlist.png",
+                      height: 28.0,
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  if (description != null && description != '')
-                    Text(
-                      description!,
-                      style: GoogleFonts.montserrat(
-                        textStyle: const TextStyle(
-                          fontWeight: FontWeight.w300,
-                          fontSize: 16.0,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: GoogleFonts.poppins(
+                            textStyle: const TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18.0,
+                              overflow: TextOverflow.clip,
+                            ),
+                          ),
                         ),
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.clip,
+                        if (addedAt != null) const SizedBox(height: 4.0),
+                        if (addedAt != null)
+                          Text(
+                            "Added on ${_formatDate(DateTime.parse(addedAt!))}",
+                            style: GoogleFonts.poppins(
+                              textStyle: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                fontSize: 14.0,
+                                overflow: TextOverflow.clip,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1
+                                    ?.color
+                                    ?.withOpacity(0.5),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
-                  if (addedAt != null) const SizedBox(height: 4.0),
-                  if (addedAt != null)
-                    Text(
-                      _formatDate(DateTime.parse(addedAt!)),
-                      style: GoogleFonts.poppins(
-                        textStyle: const TextStyle(
-                          fontWeight: FontWeight.w300,
-                          fontSize: 12.0,
-                          overflow: TextOverflow.clip,
-                        ),
-                      ),
-                    ),
+                  ),
                 ],
               ),
             ),
-            PopupMenuButton(
-              padding: const EdgeInsets.all(0.0),
-              onSelected: (value) async {
-                if (value == 0) onEditBtn!();
-                if (value == 1) onDeleteBtn!();
-              },
-              itemBuilder: (ctx) {
-                return [
-                  const PopupMenuItem(
-                    value: 0,
-                    child: PopUpMenuTile(
-                      title: 'Edit',
-                      icon: Icons.edit,
+            const SizedBox(width: 16.0),
+            Expanded(
+              flex: 1,
+              child: PopupMenuButton(
+                padding: EdgeInsets.zero,
+                iconSize: 24.0,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                ),
+                onSelected: (value) async {
+                  if (value == 0) onEditBtn!();
+                  if (value == 1) onDeleteBtn!();
+                },
+                itemBuilder: (ctx) {
+                  return [
+                    const PopupMenuItem(
+                      value: 0,
+                      child: PopUpMenuTile(
+                        title: 'Edit',
+                        icon: Icons.edit,
+                      ),
                     ),
-                  ),
-                  const PopupMenuItem(
-                    value: 1,
-                    child: PopUpMenuTile(
-                      title: 'Delete',
-                      icon: Icons.delete_forever,
+                    const PopupMenuItem(
+                      value: 1,
+                      child: PopUpMenuTile(
+                        title: 'Delete',
+                        icon: Icons.delete_forever,
+                      ),
                     ),
-                  ),
-                ];
-              },
-              icon: const Icon(
-                Icons.more_vert,
-                size: 24.0,
+                  ];
+                },
+                icon: const Icon(
+                  Icons.more_vert,
+                ),
               ),
             ),
           ],

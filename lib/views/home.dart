@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grocery_list_maker/constants/colors.dart';
 import 'package:grocery_list_maker/constants/strings.dart';
-import 'package:grocery_list_maker/main.dart';
+import 'package:grocery_list_maker/main.dart' show groceryProvider;
 import 'package:grocery_list_maker/models/grocery_list.dart';
 import 'package:grocery_list_maker/views/add_edit_list.dart';
 import 'package:grocery_list_maker/views/list_details.dart';
@@ -26,7 +26,7 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.only(
                 top: 8.0,
                 bottom: 8.0,
-                left: 16.0,
+                left: 12.0,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
                     style: GoogleFonts.rowdies(
                       textStyle: const TextStyle(
                         fontSize: 24.0,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                         overflow: TextOverflow.clip,
                       ),
                     ),
@@ -65,7 +65,7 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 8.0),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: StreamBuilder<List<GroceryList?>>(
                   stream: groceryProvider.onGroceryListItems(),
                   builder: (ctx, snapshot) {
@@ -98,88 +98,81 @@ class HomePage extends StatelessWidget {
                         ),
                       );
                     }
-                    return ListView.builder(
+                    return ListView.separated(
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (ctx, i) {
                         var item = items[i]!;
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GestureDetector(
-                              child: GroceryListCard(
-                                title: item.title.v ?? '',
-                                description: item.description.v ?? '',
-                                addedAt: item.addedAt.v ?? '',
-                                color: i % 2 == 0
-                                    ? Colors.redAccent.withOpacity(0.75)
-                                    : Colors.green.withOpacity(0.75),
-                                onViewBtn: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) {
-                                        return ListDetailsPage(
-                                          initialItem: item,
-                                        );
-                                      },
-                                    ),
+                        return GroceryListCard(
+                          title: item.title.v ?? '',
+                          addedAt: item.addedAt.v ?? '',
+                          onViewBtn: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) {
+                                  return ListDetailsPage(
+                                    initialItem: item,
                                   );
-                                },
-                                onEditBtn: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) {
-                                        return AddEditListPage(
-                                          initialItem: item,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                                onDeleteBtn: () async {
-                                  if (await showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (ctx) {
-                                            return AlertDialog(
-                                              title: const Text("Delete List?"),
-                                              content: SingleChildScrollView(
-                                                child: ListBody(
-                                                  children: const [
-                                                    Text(
-                                                        "Tap YES to delete the list."),
-                                                  ],
-                                                ),
-                                              ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(ctx, false);
-                                                  },
-                                                  child: const Text('NO'),
-                                                ),
-                                                ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(ctx, true);
-                                                  },
-                                                  child: const Text('YES'),
-                                                ),
-                                              ],
-                                            );
-                                          }) ??
-                                      false) {
-                                    await groceryProvider
-                                        .deleteGroceryListItem(item.id.v);
-                                  }
                                 },
                               ),
-                            ),
-                            if (i != (items.length - 1))
-                              const SizedBox(height: 8.0),
-                          ],
+                            );
+                          },
+                          onEditBtn: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) {
+                                  return AddEditListPage(
+                                    initialItem: item,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          onDeleteBtn: () async {
+                            if (await showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (ctx) {
+                                      return AlertDialog(
+                                        title: const Text("Delete List?"),
+                                        content: SingleChildScrollView(
+                                          child: ListBody(
+                                            children: const [
+                                              Text(
+                                                  "Tap YES to delete the list."),
+                                            ],
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(ctx, false);
+                                            },
+                                            child: const Text('NO'),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(ctx, true);
+                                            },
+                                            child: const Text('YES'),
+                                          ),
+                                        ],
+                                      );
+                                    }) ??
+                                false) {
+                              await groceryProvider
+                                  .deleteGroceryListItem(item.id.v);
+                            }
+                          },
                         );
                       },
                       itemCount: items.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        if (index != (items.length - 1)) {
+                          return const SizedBox(height: 16.0);
+                        }
+                        return const SizedBox(height: 0.0);
+                      },
                     );
                   },
                 ),

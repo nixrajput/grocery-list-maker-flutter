@@ -102,7 +102,7 @@ class GroceryProvider {
         '$columnListId INTEGER, $columnAddedAt TEXT)');
     await db.execute(
         'CREATE TABLE $tableGroceryLists($columnId INTEGER PRIMARY KEY, '
-        '$columnTitle TEXT, $columnDescription TEXT, $columnAddedAt DATE)');
+        '$columnTitle TEXT, $columnAddedAt TEXT)');
     await db.execute(
         'CREATE INDEX ItemAddedAt ON $tableGroceryItems ($columnAddedAt)');
     await db.execute(
@@ -144,11 +144,11 @@ class GroceryProvider {
       columns: [
         columnId,
         columnTitle,
-        columnDescription,
         columnAddedAt,
       ],
       where: '$columnId = ?',
       whereArgs: <Object?>[id],
+      orderBy: '$columnAddedAt DESC',
     ));
 
     if (list.isNotEmpty) {
@@ -342,7 +342,8 @@ class GroceryProvider {
         ],
         where: '$columnListId = ?',
         whereArgs: <Object?>[listId],
-        orderBy: '$columnAddedAt ${(descending ?? false) ? 'ASC' : 'DESC'}',
+        // orderBy: '$columnTitle ${(descending ?? false) ? 'ASC' : 'DESC'}',
+        orderBy: columnTitle,
         limit: limit,
         offset: offset,
       ));
@@ -371,7 +372,11 @@ class GroceryProvider {
       {int? offset, int? limit, bool? descending}) async {
     var list = (await db!.query(
       tableGroceryLists,
-      columns: [columnId, columnTitle, columnDescription, columnAddedAt],
+      columns: [
+        columnId,
+        columnTitle,
+        columnAddedAt,
+      ],
       orderBy: '$columnAddedAt ${(descending ?? false) ? 'ASC' : 'DESC'}',
       limit: limit,
       offset: offset,

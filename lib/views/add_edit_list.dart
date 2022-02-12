@@ -18,7 +18,6 @@ class AddEditListPage extends StatefulWidget {
 class _AddEditListPageState extends State<AddEditListPage> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController? _titleTextController;
-  TextEditingController? _descTextController;
 
   int? get _groceryListId => widget.initialItem?.id.v;
 
@@ -28,7 +27,6 @@ class _AddEditListPageState extends State<AddEditListPage> {
       await groceryProvider.saveGroceryListItem(GroceryList()
         ..id.v = _groceryListId
         ..title.v = _titleTextController!.text
-        ..description.v = _descTextController!.text
         ..addedAt.v = DateTime.now().toIso8601String());
       Navigator.pop(context);
       // if (_groceryItemId != null) {
@@ -43,18 +41,14 @@ class _AddEditListPageState extends State<AddEditListPage> {
     if (widget.initialItem != null) {
       _titleTextController =
           TextEditingController(text: widget.initialItem?.title.v);
-      _descTextController =
-          TextEditingController(text: widget.initialItem?.description.v);
     } else {
       _titleTextController = TextEditingController(text: null);
-      _descTextController = TextEditingController(text: null);
     }
   }
 
   @override
   void dispose() {
     _titleTextController?.dispose();
-    _descTextController?.dispose();
     super.dispose();
   }
 
@@ -69,12 +63,6 @@ class _AddEditListPageState extends State<AddEditListPage> {
                 _titleTextController!.text.isNotEmpty) ||
             (widget.initialItem != null &&
                 _titleTextController!.text != widget.initialItem?.title.v)) {
-          dirty = true;
-        } else if ((widget.initialItem == null &&
-                _descTextController!.text.isNotEmpty) ||
-            (widget.initialItem != null &&
-                _descTextController!.text !=
-                    widget.initialItem?.description.v)) {
           dirty = true;
         }
 
@@ -126,7 +114,7 @@ class _AddEditListPageState extends State<AddEditListPage> {
                   padding: const EdgeInsets.only(
                     top: 8.0,
                     bottom: 8.0,
-                    left: 16.0,
+                    left: 12.0,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -143,12 +131,6 @@ class _AddEditListPageState extends State<AddEditListPage> {
                                   (widget.initialItem != null &&
                                       _titleTextController!.text !=
                                           widget.initialItem?.title.v)) {
-                                dirty = true;
-                              } else if ((widget.initialItem == null &&
-                                      _descTextController!.text.isNotEmpty) ||
-                                  (widget.initialItem != null &&
-                                      _descTextController!.text !=
-                                          widget.initialItem?.description.v)) {
                                 dirty = true;
                               }
 
@@ -207,7 +189,7 @@ class _AddEditListPageState extends State<AddEditListPage> {
                           style: GoogleFonts.rowdies(
                             textStyle: const TextStyle(
                               fontSize: 24.0,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w600,
                               overflow: TextOverflow.clip,
                             ),
                           ),
@@ -218,62 +200,62 @@ class _AddEditListPageState extends State<AddEditListPage> {
                 ),
                 const SizedBox(height: 16.0),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(),
-                      children: [
-                        Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 16.0),
-                              TextFormField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Title',
-                                ),
-                                controller: _titleTextController,
-                                textCapitalization: TextCapitalization.words,
-                                validator: (val) => val!.isNotEmpty
-                                    ? null
-                                    : 'Title must not be empty',
-                              ),
-                              const SizedBox(height: 16.0),
-                              TextFormField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Description',
-                                ),
-                                controller: _descTextController,
-                                keyboardType: TextInputType.multiline,
-                                maxLines: 3,
-                              ),
-                              const SizedBox(height: 64.0),
-                              ElevatedButton(
-                                onPressed: save,
-                                child: Text(
-                                  "Save",
-                                  style: GoogleFonts.poppins(
-                                    textStyle: const TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.w700,
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: ListView(
+                          shrinkWrap: true,
+                          physics: const BouncingScrollPhysics(),
+                          children: [
+                            Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 16.0),
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                      labelText: 'Title',
                                     ),
+                                    controller: _titleTextController,
+                                    textCapitalization:
+                                        TextCapitalization.words,
+                                    validator: (val) => val!.isNotEmpty
+                                        ? null
+                                        : 'Title must not be empty',
                                   ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          child: ElevatedButton(
+                            onPressed: save,
+                            child: Text(
+                              "Save",
+                              style: GoogleFonts.poppins(
+                                textStyle: const TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.w700,
                                 ),
-                                style: ButtonStyle(
-                                  padding: MaterialStateProperty.all(
-                                    const EdgeInsets.symmetric(vertical: 16.0),
-                                  ),
-                                  minimumSize: MaterialStateProperty.all(
-                                    Size(deviceSize.width, 40.0),
-                                  ),
-                                ),
-                              )
-                            ],
+                              ),
+                            ),
+                            style: ButtonStyle(
+                              padding: MaterialStateProperty.all(
+                                const EdgeInsets.symmetric(vertical: 16.0),
+                              ),
+                            ),
                           ),
-                        )
-                      ],
-                    ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:grocery_list_maker/constants/colors.dart';
-import 'package:grocery_list_maker/main.dart';
+import 'package:grocery_list_maker/main.dart' show groceryProvider;
 import 'package:grocery_list_maker/models/grocery_item.dart';
 import 'package:grocery_list_maker/models/grocery_list.dart';
 import 'package:grocery_list_maker/views/add_edit_item.dart';
@@ -48,11 +48,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
+            Container(
               padding: const EdgeInsets.only(
                 top: 8.0,
                 bottom: 8.0,
-                left: 16.0,
+                left: 12.0,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -72,7 +72,11 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         padding: const EdgeInsets.all(0.0),
                       ),
                       PopupMenuButton(
-                        padding: const EdgeInsets.all(0.0),
+                        padding: EdgeInsets.zero,
+                        iconSize: 24.0,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                        ),
                         onSelected: (value) async {
                           if (value == 0) {
                             await showDialog(
@@ -101,7 +105,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                             textCapitalization:
                                                 TextCapitalization.words,
                                           ),
-                                          const SizedBox(height: 8.0),
+                                          const SizedBox(height: 16.0),
                                           TextFormField(
                                             decoration: const InputDecoration(
                                               labelText: 'Name',
@@ -115,7 +119,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                                             textCapitalization:
                                                 TextCapitalization.words,
                                           ),
-                                          const SizedBox(height: 8.0),
+                                          const SizedBox(height: 16.0),
                                           TextFormField(
                                             decoration: const InputDecoration(
                                               labelText: 'Address',
@@ -231,7 +235,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                       style: GoogleFonts.rowdies(
                         textStyle: const TextStyle(
                           fontSize: 24.0,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                           overflow: TextOverflow.clip,
                         ),
                       ),
@@ -243,7 +247,7 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
             const SizedBox(height: 16.0),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: StreamBuilder<List<GroceryItem?>>(
                   stream: groceryProvider.onGroceryItems(
                     listId: _groceryListId,
@@ -279,73 +283,118 @@ class _ListDetailsPageState extends State<ListDetailsPage> {
                         ),
                       );
                     }
-                    return ListView.builder(
+                    return ListView.separated(
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (ctx, i) {
                         var item = items[i]!;
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GroceryItemCard(
-                              title: item.title.v ?? '',
-                              description: item.description.v ?? '',
-                              quantity: item.quantity.v ?? '',
-                              onEditBtn: () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) {
-                                      return AddEditItemPage(
-                                        initialItem: item,
-                                        groceryListId: _groceryListId,
-                                      );
-                                    },
-                                  ),
+                        return GroceryItemCard(
+                          title: item.title.v ?? '',
+                          description: item.description.v ?? '',
+                          quantity: item.quantity.v ?? '',
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              builder: (ctx) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const SizedBox(height: 16.0),
+                                    ListTile(
+                                      leading: Text(
+                                        "Edit",
+                                        style: GoogleFonts.poppins(
+                                          textStyle: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16.0,
+                                          ),
+                                        ),
+                                      ),
+                                      trailing: const Icon(Icons.edit),
+                                      onTap: () {
+                                        Navigator.pop(ctx);
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (_) {
+                                              return AddEditItemPage(
+                                                initialItem: item,
+                                                groceryListId: _groceryListId,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: Text(
+                                        "Delete",
+                                        style: GoogleFonts.poppins(
+                                          textStyle: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16.0,
+                                          ),
+                                        ),
+                                      ),
+                                      trailing:
+                                          const Icon(Icons.delete_forever),
+                                      onTap: () async {
+                                        Navigator.pop(ctx);
+                                        if (await showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (ctx) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                        "Delete Item?"),
+                                                    content:
+                                                        SingleChildScrollView(
+                                                      child: ListBody(
+                                                        children: const [
+                                                          Text(
+                                                              "Tap YES to delete the item."),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              ctx, false);
+                                                        },
+                                                        child: const Text('NO'),
+                                                      ),
+                                                      ElevatedButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              ctx, true);
+                                                        },
+                                                        child:
+                                                            const Text('YES'),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }) ??
+                                            false) {
+                                          await groceryProvider
+                                              .deleteGroceryItem(item.id.v);
+                                        }
+                                      },
+                                    ),
+                                    const SizedBox(height: 16.0),
+                                  ],
                                 );
                               },
-                              onDeleteBtn: () async {
-                                if (await showDialog(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (ctx) {
-                                          return AlertDialog(
-                                            title: const Text("Delete Item?"),
-                                            content: SingleChildScrollView(
-                                              child: ListBody(
-                                                children: const [
-                                                  Text(
-                                                      "Tap YES to delete the item."),
-                                                ],
-                                              ),
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(ctx, false);
-                                                },
-                                                child: const Text('NO'),
-                                              ),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.pop(ctx, true);
-                                                },
-                                                child: const Text('YES'),
-                                              ),
-                                            ],
-                                          );
-                                        }) ??
-                                    false) {
-                                  await groceryProvider
-                                      .deleteGroceryItem(item.id.v);
-                                }
-                              },
-                            ),
-                            if (i != (items.length - 1))
-                              const SizedBox(height: 8.0),
-                          ],
+                            );
+                          },
                         );
                       },
                       itemCount: items.length,
+                      separatorBuilder: (BuildContext context, int index) {
+                        if (index != (items.length - 1)) {
+                          return const SizedBox(height: 16.0);
+                        }
+                        return const SizedBox(height: 0.0);
+                      },
                     );
                   },
                 ),

@@ -13,7 +13,7 @@ class AppThemes {
     ),
     dialogBackgroundColor: lightBGColor,
     popupMenuTheme: const PopupMenuThemeData(
-      color: lightBGColor,
+      color: lightColor,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
@@ -24,6 +24,9 @@ class AppThemes {
       style: ButtonStyle(
         foregroundColor: MaterialStateProperty.all(darkColor),
       ),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: lightColor,
     ),
     textTheme: const TextTheme(
       bodyText1: TextStyle(color: darkColor),
@@ -62,6 +65,9 @@ class AppThemes {
       style: ButtonStyle(
         foregroundColor: MaterialStateProperty.all(lightColor),
       ),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: darkColor,
     ),
     textTheme: const TextTheme(
       bodyText1: TextStyle(color: lightColor),

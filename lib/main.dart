@@ -7,11 +7,13 @@ import 'package:grocery_list_maker/constants/colors.dart';
 import 'package:grocery_list_maker/constants/strings.dart';
 import 'package:grocery_list_maker/providers/grocery_provider.dart';
 import 'package:grocery_list_maker/views/home.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tekartik_app_flutter_sqflite/sqflite.dart';
 
 import 'app_platform/app_platform.dart';
 
 late GroceryProvider groceryProvider;
+late PackageInfo packageInfo;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +28,8 @@ void main() async {
 
   groceryProvider = GroceryProvider(databaseFactory);
   await groceryProvider.ready;
+
+  packageInfo = await PackageInfo.fromPlatform();
 
   runApp(const MyApp());
 }

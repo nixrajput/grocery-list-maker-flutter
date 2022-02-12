@@ -144,7 +144,7 @@ class _AddEditItemPageState extends State<AddEditItemPage> {
                   padding: const EdgeInsets.only(
                     top: 8.0,
                     bottom: 8.0,
-                    left: 16.0,
+                    left: 12.0,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -231,7 +231,7 @@ class _AddEditItemPageState extends State<AddEditItemPage> {
                           style: GoogleFonts.rowdies(
                             textStyle: const TextStyle(
                               fontSize: 24.0,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w600,
                               overflow: TextOverflow.clip,
                             ),
                           ),
@@ -242,73 +242,81 @@ class _AddEditItemPageState extends State<AddEditItemPage> {
                 ),
                 const SizedBox(height: 16.0),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(),
-                      children: [
-                        Form(
-                          key: _formKey,
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 16.0),
-                              TextFormField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Title',
-                                ),
-                                controller: _titleTextController,
-                                textCapitalization: TextCapitalization.words,
-                                validator: (val) => val!.isNotEmpty
-                                    ? null
-                                    : 'Title must not be empty',
-                              ),
-                              const SizedBox(height: 16.0),
-                              TextFormField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Description',
-                                ),
-                                controller: _descTextController,
-                                keyboardType: TextInputType.multiline,
-                                maxLines: 3,
-                              ),
-                              const SizedBox(height: 16.0),
-                              TextFormField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Quantity',
-                                ),
-                                controller: _quantityTextController,
-                                validator: (val) => val!.isNotEmpty
-                                    ? null
-                                    : 'Quantity must not be empty',
-                                keyboardType: TextInputType.text,
-                              ),
-                              const SizedBox(height: 64.0),
-                              ElevatedButton(
-                                onPressed: save,
-                                child: Text(
-                                  "Save",
-                                  style: GoogleFonts.poppins(
-                                    textStyle: const TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.w700,
+                  child: Stack(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: ListView(
+                          shrinkWrap: true,
+                          physics: const BouncingScrollPhysics(),
+                          children: [
+                            Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 16.0),
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                      labelText: 'Title',
                                     ),
+                                    controller: _titleTextController,
+                                    textCapitalization:
+                                        TextCapitalization.words,
+                                    validator: (val) => val!.isNotEmpty
+                                        ? null
+                                        : 'Title must not be empty',
                                   ),
+                                  const SizedBox(height: 32.0),
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                      labelText: 'Quantity',
+                                    ),
+                                    controller: _quantityTextController,
+                                    validator: (val) => val!.isNotEmpty
+                                        ? null
+                                        : 'Quantity must not be empty',
+                                    keyboardType: TextInputType.text,
+                                  ),
+                                  const SizedBox(height: 32.0),
+                                  TextFormField(
+                                    decoration: const InputDecoration(
+                                      labelText: 'Description',
+                                    ),
+                                    controller: _descTextController,
+                                    keyboardType: TextInputType.text,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          child: ElevatedButton(
+                            onPressed: save,
+                            child: Text(
+                              "Save",
+                              style: GoogleFonts.poppins(
+                                textStyle: const TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.w700,
                                 ),
-                                style: ButtonStyle(
-                                  padding: MaterialStateProperty.all(
-                                    const EdgeInsets.symmetric(vertical: 16.0),
-                                  ),
-                                  minimumSize: MaterialStateProperty.all(
-                                    Size(deviceSize.width, 40.0),
-                                  ),
-                                ),
-                              )
-                            ],
+                              ),
+                            ),
+                            style: ButtonStyle(
+                              padding: MaterialStateProperty.all(
+                                const EdgeInsets.symmetric(vertical: 16.0),
+                              ),
+                            ),
                           ),
-                        )
-                      ],
-                    ),
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ],
