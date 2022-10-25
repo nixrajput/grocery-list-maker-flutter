@@ -11,7 +11,7 @@ class AppThemes {
       backgroundColor: lightBGColor,
       modalBackgroundColor: lightBGColor,
     ),
-    dialogBackgroundColor: lightBGColor,
+    dialogBackgroundColor: lightColor,
     popupMenuTheme: const PopupMenuThemeData(
       color: lightColor,
     ),
@@ -52,7 +52,7 @@ class AppThemes {
       backgroundColor: darkColor2,
       modalBackgroundColor: darkColor2,
     ),
-    dialogBackgroundColor: darkColor2,
+    dialogBackgroundColor: darkColor,
     popupMenuTheme: const PopupMenuThemeData(
       color: darkColor2,
     ),

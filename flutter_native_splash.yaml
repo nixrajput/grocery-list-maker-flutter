@@ -5,9 +5,6 @@ flutter_native_splash:
   image: assets/splash.png
   image_dark: assets/splash_dark.png
 
-  branding: assets/brand.png
-  branding_mode: bottom
-
   android_gravity: center
   ios_content_mode: center
   web_image_mode: center

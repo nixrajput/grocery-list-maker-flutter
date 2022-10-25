@@ -1,45 +1,84 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:grocery_list_maker/app_bloc_observer.dart';
 import 'package:grocery_list_maker/constants/app_themes.dart';
 import 'package:grocery_list_maker/constants/colors.dart';
 import 'package:grocery_list_maker/constants/strings.dart';
-import 'package:grocery_list_maker/providers/grocery_provider.dart';
-import 'package:grocery_list_maker/views/home.dart';
+import 'package:grocery_list_maker/models/grocery_item.dart';
+import 'package:grocery_list_maker/models/grocery_list.dart';
+import 'package:grocery_list_maker/modules/grocery_item/cubit/grocery_item_cubit.dart';
+import 'package:grocery_list_maker/modules/grocery_list/cubit/grocery_list_cubit.dart';
+import 'package:grocery_list_maker/modules/grocery_list/views/grocery_list_view.dart';
+import 'package:grocery_list_maker/repository/grocery_repository.dart';
+import 'package:grocery_list_maker/utils/utility.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:tekartik_app_flutter_sqflite/sqflite.dart';
 
-import 'app_platform/app_platform.dart';
-
-late GroceryProvider groceryProvider;
 late PackageInfo packageInfo;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  platformInit();
+  try {
+    await initPreAppServices();
 
-  if (!kIsWeb) {
-    sqfliteWindowsFfiInit();
+    runApp(MyApp(groceryRepository: GroceryRepository()));
+  } catch (err) {
+    AppUtility.log('Error occurred in main: ${err.toString()}', tag: 'error');
   }
+}
 
-  var packageName = 'com.nixlab.grocery_list_maker';
-  var databaseFactory = getDatabaseFactory(packageName: packageName);
+Future<void> initPreAppServices() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-  groceryProvider = GroceryProvider(databaseFactory);
-  await groceryProvider.ready;
+  Bloc.observer = AppBlocObserver();
+
+  await Hive.initFlutter();
 
   packageInfo = await PackageInfo.fromPlatform();
 
-  runApp(const MyApp());
+  AppUtility.log('Registering Hive Adapters');
+
+  Hive.registerAdapter(GroceryListAdapter());
+  Hive.registerAdapter(GroceryItemAdapter());
+
+  AppUtility.log('Opening Hive Boxes');
+
+  await Hive.openBox<GroceryList>(groceryLists);
+  await Hive.openBox<GroceryItem>(groceryItems);
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key, required GroceryRepository groceryRepository})
+      : _groceryRepository = groceryRepository;
+
+  final GroceryRepository _groceryRepository;
 
   @override
   Widget build(BuildContext context) {
-    if (SchedulerBinding.instance!.window.platformBrightness ==
+    return RepositoryProvider.value(
+      value: _groceryRepository,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (_) => GroceryListCubit(_groceryRepository),
+          ),
+          BlocProvider(
+            create: (_) => GroceryItemCubit(_groceryRepository),
+          ),
+        ],
+        child: const MyAppView(),
+      ),
+    );
+  }
+}
+
+class MyAppView extends StatelessWidget {
+  const MyAppView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (SchedulerBinding.instance.window.platformBrightness ==
         Brightness.light) {
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
@@ -68,7 +107,7 @@ class MyApp extends StatelessWidget {
       theme: AppThemes.lightTheme,
       darkTheme: AppThemes.darkTheme,
       themeMode: ThemeMode.system,
-      home: const HomePage(),
+      home: const GroceryListView(),
     );
   }
 }

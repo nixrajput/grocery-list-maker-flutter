@@ -2,3 +2,7 @@ flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: assets/logo.png
+
+  adaptive_icon_background: "#ffffff"
+
+# flutter pub run flutter_launcher_icons:main
