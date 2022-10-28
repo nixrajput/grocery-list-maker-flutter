@@ -31,7 +31,7 @@ class GroceryListPdf {
   final String customerName;
   final String customerAddress;
   final String title;
-  final List<GroceryItem?>? items;
+  final List<GroceryItem>? items;
 
   final PdfColor baseColor;
   final PdfColor accentColor;
@@ -66,7 +66,7 @@ class GroceryListPdf {
             await PdfGoogleFonts.notoSansBold(),
             await PdfGoogleFonts.notoSansItalic(),
           ),
-          header: (ctx) => _buildHeader(ctx),
+          header: _buildHeader,
           footer: (ctx) => _buildFooter(ctx, logoImage, brandImage),
           build: (context) => [
                 _contentTable(context),
@@ -245,7 +245,7 @@ class GroceryListPdf {
         (row) => List<String>.generate(
           tableHeaders.length,
           // (col) => items![row]!.getIndex(col, row),
-          (col) => items![row]!.id,
+          (col) => items![row].id,
         ),
       ),
     );

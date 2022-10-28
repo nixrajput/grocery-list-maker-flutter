@@ -54,7 +54,7 @@ abstract class HiveServices {
     return box.toMap() as Map<String, dynamic>;
   }
 
-  static Future<List<E>?> getAll<E>(String boxName) async {
+  static Future<List<E>> getAll<E>(String boxName) async {
     AppUtility.log('getting all items from box [$boxName]');
     final box = await _openBox<E>(boxName);
     return box.values.toList();

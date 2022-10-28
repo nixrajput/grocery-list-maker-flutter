@@ -64,7 +64,6 @@ class GroceryListCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (item.itemsCount != null) const SizedBox(height: 4.0),
                   if (item.itemsCount != null)
                     Text(
                       "${item.itemsCount} items",
@@ -92,7 +91,7 @@ class GroceryListCard extends StatelessWidget {
                             .textTheme
                             .bodyText1
                             ?.color
-                            ?.withOpacity(0.5),
+                            ?.withOpacity(0.4),
                       ),
                     ),
                   ),
@@ -106,7 +105,7 @@ class GroceryListCard extends StatelessWidget {
   }
 
   void _showOptionsBottomSheet(BuildContext context) async {
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       builder: (ctx) {
         return Column(
@@ -153,36 +152,24 @@ class GroceryListCard extends StatelessWidget {
   }
 
   _showDeleteDialog(BuildContext context) async {
-    await showDialog(
+    AppUtility.showAlertDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        return AlertDialog(
-          title: const Text("Delete Item?"),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const [
-                Text("Tap YES to delete the item."),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(ctx, false);
-              },
-              child: const Text('NO'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(ctx, true);
-                onDeleteBtn?.call();
-              },
-              child: const Text('YES'),
-            ),
-          ],
-        );
-      },
+      body: const Text("Tap YES to delete the item."),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+          child: const Text('NO'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context, true);
+            onDeleteBtn?.call();
+          },
+          child: const Text('YES'),
+        ),
+      ],
     );
   }
 }

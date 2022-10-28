@@ -58,56 +58,29 @@ class _AddEditItemViewState extends State<AddEditItemView> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
 
-    return WillPopScope(
-      onWillPop: () async {
-        var dirty = false;
-        if ((widget.initialItem == null &&
-                _titleTextController!.text.isNotEmpty) ||
-            (widget.initialItem != null &&
-                _titleTextController!.text != widget.initialItem?.title)) {
-          dirty = true;
-        } else if ((widget.initialItem == null &&
-                _descTextController!.text.isNotEmpty) ||
-            (widget.initialItem != null &&
-                _descTextController!.text != widget.initialItem?.description)) {
-          dirty = true;
-        } else if ((widget.initialItem == null &&
-                _quantityTextController!.text.isNotEmpty) ||
-            (widget.initialItem != null &&
-                _quantityTextController!.text !=
-                    widget.initialItem?.quantity)) {
-          dirty = true;
-        }
-
-        if (dirty) {
-          _showBackDialog();
-        }
-        return true;
-      },
-      child: UnFocusWidget(
-        child: Scaffold(
-          body: SafeArea(
-            child: SizedBox(
-              width: deviceSize.width,
-              height: deviceSize.height,
-              child: Stack(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildAppBar(context),
-                      const SizedBox(height: 16.0),
-                      _buildBody(context),
-                    ],
-                  ),
-                  Positioned(
-                    bottom: 12.0,
-                    left: 12.0,
-                    right: 12.0,
-                    child: _buildAddButton(context),
-                  ),
-                ],
-              ),
+    return UnFocusWidget(
+      child: Scaffold(
+        body: SafeArea(
+          child: SizedBox(
+            width: deviceSize.width,
+            height: deviceSize.height,
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildAppBar(context),
+                    const SizedBox(height: 16.0),
+                    _buildBody(context),
+                  ],
+                ),
+                Positioned(
+                  bottom: 12.0,
+                  left: 12.0,
+                  right: 12.0,
+                  child: _buildAddButton(context),
+                ),
+              ],
             ),
           ),
         ),
@@ -121,25 +94,27 @@ class _AddEditItemViewState extends State<AddEditItemView> {
       onTap: () async {
         if (_formKey.currentState!.validate()) {
           if (widget.initialItem == null) {
-            await BlocProvider.of<GroceryItemCubit>(context)
+            await context
+                .read<GroceryItemCubit>()
                 .addGroceryItem(
-              listId: _groceryListId!,
-              title: _titleTextController!.text,
-              description: _descTextController!.text,
-              quantity: _quantityTextController!.text,
-            )
-                .then((_) {
-              context.read<GroceryListCubit>().getGroceryLists();
+                  listId: _groceryListId!,
+                  title: _titleTextController!.text,
+                  description: _descTextController!.text,
+                  quantity: _quantityTextController!.text,
+                )
+                .then((_) async {
+              await context.read<GroceryListCubit>().getGroceryLists();
               Navigator.pop(context, true);
             });
           } else {
-            await BlocProvider.of<GroceryItemCubit>(context)
+            await context
+                .read<GroceryItemCubit>()
                 .updateGroceryItem(
-              widget.initialItem!.id,
-              title: _titleTextController!.text,
-              description: _descTextController!.text,
-              quantity: _quantityTextController!.text,
-            )
+                  widget.initialItem!.id,
+                  title: _titleTextController!.text,
+                  description: _descTextController!.text,
+                  quantity: _quantityTextController!.text,
+                )
                 .then((_) {
               Navigator.pop(context, true);
             });
@@ -224,22 +199,7 @@ class _AddEditItemViewState extends State<AddEditItemView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap: () async {
-              var dirty = false;
-              if ((widget.initialItem == null &&
-                      _titleTextController!.text.isNotEmpty) ||
-                  (widget.initialItem != null &&
-                      _titleTextController!.text !=
-                          widget.initialItem?.title)) {
-                dirty = true;
-              }
-
-              if (dirty == true) {
-                _showBackDialog();
-              } else {
-                Navigator.pop(context, true);
-              }
-            },
+            onTap: () => Navigator.pop(context, true),
             child: const Icon(
               Icons.arrow_back,
               size: 24.0,
@@ -259,39 +219,5 @@ class _AddEditItemViewState extends State<AddEditItemView> {
         ],
       ),
     );
-  }
-
-  Future<bool?> _showBackDialog() async {
-    return await showDialog(
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: const Text("Discard changes?"),
-            content: SingleChildScrollView(
-              child: ListBody(
-                children: const [
-                  Text("Content has changed."),
-                  SizedBox(height: 16.0),
-                  Text("Tap CONTINUE to discard your changes."),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx, true);
-                  Navigator.pop(context, true);
-                },
-                child: const Text('CONTINUE'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(ctx, false);
-                },
-                child: const Text('CANCEL'),
-              ),
-            ],
-          );
-        });
   }
 }

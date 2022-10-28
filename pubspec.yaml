@@ -1,5 +1,5 @@
 name: grocery_list_maker
-description: A new Flutter project.
+description: A mobile app that allows you to create a grocery list and share it with others.
 
 publish_to: "none"
 
@@ -20,12 +20,12 @@ dependencies:
   talker: ^2.0.0+1
 
   intl: ^0.17.0
-  # open_file: ^3.2.1
   path_provider: ^2.0.11
   google_fonts: ^3.0.1
   flutter_svg: ^1.1.5
   r_upgrade: ^0.3.8+2
 
+  open_file_plus: ^3.3.0
   pdf: ^3.8.4
   printing: ^5.9.3
   hive: ^2.2.3

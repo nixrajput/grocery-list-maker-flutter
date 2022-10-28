@@ -40,45 +40,29 @@ class AddEditListViewState extends State<AddEditListView> {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
 
-    return WillPopScope(
-      onWillPop: () async {
-        var dirty = false;
-        if ((widget.initialItem == null &&
-                _titleTextController!.text.isNotEmpty) ||
-            (widget.initialItem != null &&
-                _titleTextController!.text != widget.initialItem?.title)) {
-          dirty = true;
-        }
-
-        if (dirty) {
-          _showBackDialog();
-        }
-        return true;
-      },
-      child: UnFocusWidget(
-        child: Scaffold(
-          body: SafeArea(
-            child: SizedBox(
-              width: deviceSize.width,
-              height: deviceSize.height,
-              child: Stack(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _buildAppBar(context),
-                      const SizedBox(height: 16.0),
-                      _buildBody(context),
-                    ],
-                  ),
-                  Positioned(
-                    bottom: 12.0,
-                    left: 12.0,
-                    right: 12.0,
-                    child: _buildAddButton(context),
-                  ),
-                ],
-              ),
+    return UnFocusWidget(
+      child: Scaffold(
+        body: SafeArea(
+          child: SizedBox(
+            width: deviceSize.width,
+            height: deviceSize.height,
+            child: Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildAppBar(context),
+                    const SizedBox(height: 16.0),
+                    _buildBody(context),
+                  ],
+                ),
+                Positioned(
+                  bottom: 12.0,
+                  left: 12.0,
+                  right: 12.0,
+                  child: _buildAddButton(context),
+                ),
+              ],
             ),
           ),
         ),
@@ -171,22 +155,7 @@ class AddEditListViewState extends State<AddEditListView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap: () async {
-              var dirty = false;
-              if ((widget.initialItem == null &&
-                      _titleTextController!.text.isNotEmpty) ||
-                  (widget.initialItem != null &&
-                      _titleTextController!.text !=
-                          widget.initialItem?.title)) {
-                dirty = true;
-              }
-
-              if (dirty == true) {
-                _showBackDialog();
-              } else {
-                Navigator.pop(context, true);
-              }
-            },
+            onTap: () => Navigator.pop(context, true),
             child: const Icon(
               Icons.arrow_back,
               size: 24.0,
@@ -205,41 +174,6 @@ class AddEditListViewState extends State<AddEditListView> {
           ),
         ],
       ),
-    );
-  }
-
-  Future<bool?> _showBackDialog() async {
-    return await showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: const Text("Discard changes?"),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const [
-                Text("Content has changed."),
-                SizedBox(height: 16.0),
-                Text("Tap CONTINUE to discard your changes."),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(ctx, true);
-                Navigator.pop(context, true);
-              },
-              child: const Text('CONTINUE'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(ctx, false);
-              },
-              child: const Text('CANCEL'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grocery_list_maker/app_bloc_observer.dart';
 import 'package:grocery_list_maker/constants/app_themes.dart';
 import 'package:grocery_list_maker/constants/colors.dart';
 import 'package:grocery_list_maker/constants/strings.dart';
@@ -31,7 +30,7 @@ void main() async {
 Future<void> initPreAppServices() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  Bloc.observer = AppBlocObserver();
+  // Bloc.observer = AppBlocObserver();
 
   await Hive.initFlutter();
 

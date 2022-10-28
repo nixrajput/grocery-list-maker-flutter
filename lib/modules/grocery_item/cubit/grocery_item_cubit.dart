@@ -22,8 +22,12 @@ class GroceryItemCubit extends Cubit<GroceryItemState> {
         status: GroceryItemStatus.success,
         groceryItems: data,
       ));
-    } on Exception {
-      emit(state.copyWith(status: GroceryItemStatus.failure));
+    } catch (e) {
+      emit(state.copyWith(
+        status: GroceryItemStatus.failure,
+        errorMessage: e.toString(),
+        groceryItems: [...state.groceryItems],
+      ));
     }
   }
 
@@ -36,19 +40,34 @@ class GroceryItemCubit extends Cubit<GroceryItemState> {
     emit(state.copyWith(status: GroceryItemStatus.loading));
 
     try {
-      final data = await _groceryRepository.addGroceryItem(
-        listId: listId,
-        title: title,
-        description: description,
-        quantity: quantity,
-      );
+      var isExists = await _groceryRepository.checkIfItemAlreadyExistsWithTitle(
+          listId, title);
 
+      if (isExists) {
+        emit(state.copyWith(
+          status: GroceryItemStatus.failure,
+          errorMessage: 'Grocery item with this title already exists',
+          groceryItems: [...state.groceryItems],
+        ));
+      } else {
+        var item = await _groceryRepository.addGroceryItem(
+          listId: listId,
+          title: title,
+          description: description,
+          quantity: quantity,
+        );
+
+        emit(state.copyWith(
+          status: GroceryItemStatus.success,
+          groceryItems: [...state.groceryItems, item],
+        ));
+      }
+    } catch (e) {
       emit(state.copyWith(
-        status: GroceryItemStatus.success,
-        groceryItems: [...state.groceryItems, data],
+        status: GroceryItemStatus.failure,
+        errorMessage: e.toString(),
+        groceryItems: [...state.groceryItems],
       ));
-    } on Exception {
-      emit(state.copyWith(status: GroceryItemStatus.failure));
     }
   }
 
@@ -61,28 +80,51 @@ class GroceryItemCubit extends Cubit<GroceryItemState> {
     emit(state.copyWith(status: GroceryItemStatus.loading));
 
     try {
-      final data = await _groceryRepository.updateGroceryItem(
+      var tempItem =
+          state.groceryItems.firstWhere((element) => element.id == id);
+      if (title != null && title.isNotEmpty && title != tempItem.title) {
+        var isExists = await _groceryRepository
+            .checkIfItemAlreadyExistsWithTitle(tempItem.listId, title);
+
+        if (isExists) {
+          emit(state.copyWith(
+            status: GroceryItemStatus.failure,
+            errorMessage: 'Grocery item with this title already exists',
+            groceryItems: [...state.groceryItems],
+          ));
+          return;
+        }
+      }
+
+      var item = await _groceryRepository.updateGroceryItem(
         id,
         title: title,
         description: description,
         quantity: quantity,
       );
 
-      if (data == null) {
+      if (item != null) {
+        var temp = state.groceryItems;
+        temp.removeWhere((element) => element.id == id);
+        temp.add(item);
+
+        emit(state.copyWith(
+          status: GroceryItemStatus.success,
+          groceryItems: temp,
+        ));
+      } else {
         emit(state.copyWith(
           status: GroceryItemStatus.failure,
           errorMessage: 'Grocery item not found',
+          groceryItems: [...state.groceryItems],
         ));
-        return;
       }
-
+    } catch (e) {
       emit(state.copyWith(
-        status: GroceryItemStatus.success,
-        groceryItems:
-            state.groceryItems.map((e) => e.id == data.id ? data : e).toList(),
+        status: GroceryItemStatus.failure,
+        errorMessage: e.toString(),
+        groceryItems: [...state.groceryItems],
       ));
-    } on Exception {
-      emit(state.copyWith(status: GroceryItemStatus.failure));
     }
   }
 
@@ -92,13 +134,19 @@ class GroceryItemCubit extends Cubit<GroceryItemState> {
     try {
       await _groceryRepository.deleteGroceryItem(id, listId);
 
+      var temp = state.groceryItems;
+      temp.removeWhere((element) => element.id == id);
+
       emit(state.copyWith(
         status: GroceryItemStatus.success,
-        groceryItems:
-            state.groceryItems.where((element) => element.id != id).toList(),
+        groceryItems: temp,
       ));
-    } on Exception {
-      emit(state.copyWith(status: GroceryItemStatus.failure));
+    } catch (e) {
+      emit(state.copyWith(
+        status: GroceryItemStatus.failure,
+        errorMessage: e.toString(),
+        groceryItems: [...state.groceryItems],
+      ));
     }
   }
 }

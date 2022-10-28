@@ -11,6 +11,7 @@ import 'package:grocery_list_maker/modules/grocery_list/views/add_edit_list_view
 import 'package:grocery_list_maker/modules/grocery_list/views/grocery_list_detail_view.dart';
 import 'package:grocery_list_maker/modules/grocery_list/widgets/grocery_list_card.dart';
 import 'package:grocery_list_maker/modules/settings/settings_view.dart';
+import 'package:grocery_list_maker/utils/utility.dart';
 
 class GroceryListView extends StatefulWidget {
   const GroceryListView({super.key});
@@ -93,74 +94,70 @@ class _GroceryListViewState extends State<GroceryListView> {
   Expanded _buildBody(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
     return Expanded(
-      child: RefreshIndicator(
-        onRefresh: () => context.read<GroceryListCubit>().getGroceryLists(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: BlocConsumer<GroceryListCubit, GroceryListState>(
-            listener: (context, state) {
-              if (state.status.isFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Something went wrong'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
-            builder: (context, state) {
-              switch (state.status) {
-                case GroceryListStatus.initial:
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        child: BlocConsumer<GroceryListCubit, GroceryListState>(
+          listener: (context, state) {
+            if (state.status.isFailure) {
+              AppUtility.showSnackBar(
+                context: context,
+                message: state.errorMessage,
+              );
+            }
+          },
+          builder: (context, state) {
+            switch (state.status) {
+              case GroceryListStatus.initial:
+                return _buildEmptyWidget(deviceSize);
+              case GroceryListStatus.loading:
+                return const LoadingWidget();
+              case GroceryListStatus.success:
+              case GroceryListStatus.failure:
+                if (state.groceryLists.isEmpty) {
                   return _buildEmptyWidget(deviceSize);
-                case GroceryListStatus.loading:
-                  return const LoadingWidget();
-                case GroceryListStatus.success:
-                  if (state.groceryLists.isEmpty) {
-                    return _buildEmptyWidget(deviceSize);
-                  }
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics(),
-                    ),
-                    itemCount: state.groceryLists.length,
-                    itemBuilder: (context, index) {
-                      final groceryList = state.groceryLists[index];
-                      return GroceryListCard(
-                        item: groceryList,
-                        onViewBtn: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) {
-                                return GroceryListDetailView(
-                                  initialItem: groceryList,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                        onEditBtn: () => Navigator.of(context).push(
+                }
+
+                state.groceryLists
+                    .sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
+                  itemCount: state.groceryLists.length,
+                  itemBuilder: (context, index) {
+                    final groceryList = state.groceryLists[index];
+                    return GroceryListCard(
+                      item: groceryList,
+                      onViewBtn: () {
+                        Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) {
-                              return AddEditListView(
+                              return GroceryListDetailView(
                                 initialItem: groceryList,
                               );
                             },
                           ),
+                        );
+                      },
+                      onEditBtn: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) {
+                            return AddEditListView(
+                              initialItem: groceryList,
+                            );
+                          },
                         ),
-                        onDeleteBtn: () => context
-                            .read<GroceryListCubit>()
-                            .deleteGroceryList(groceryList.id),
-                      );
-                    },
-                  );
-                case GroceryListStatus.failure:
-                  return const Center(
-                    child: Text('Something went wrong'),
-                  );
-              }
-            },
-          ),
+                      ),
+                      onDeleteBtn: () => context
+                          .read<GroceryListCubit>()
+                          .deleteGroceryList(groceryList.id),
+                    );
+                  },
+                );
+            }
+          },
         ),
       ),
     );

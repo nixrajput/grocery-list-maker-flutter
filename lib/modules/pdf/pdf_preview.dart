@@ -2,13 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:grocery_list_maker/global_widgets/unfocus_widget.dart';
 import 'package:grocery_list_maker/models/grocery_item.dart';
+import 'package:grocery_list_maker/models/pdf_data.dart';
+import 'package:grocery_list_maker/pdf_helper/grocery_list_pdf.dart';
+import 'package:grocery_list_maker/pdf_helper/pdf_layout.dart';
+import 'package:open_file_plus/open_file_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 
 class PdfPreviewView extends StatefulWidget {
-  final List<GroceryItem?>? data;
+  final List<GroceryItem>? data;
   final String? name;
   final String? address;
   final String? title;
@@ -55,7 +61,7 @@ class PdfPreviewViewState extends State<PdfPreviewView> {
     final appDocPath = appDocDir.path;
     final file = File('$appDocPath/list.pdf');
     await file.writeAsBytes(bytes);
-    //await OpenFile.open(file.path);
+    await OpenFile.open(file.path);
   }
 
   Future<void> _init() async {
@@ -84,66 +90,82 @@ class PdfPreviewViewState extends State<PdfPreviewView> {
         ),
     ];
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 8.0,
-                bottom: 8.0,
-                left: 12.0,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      size: 28.0,
+    return UnFocusWidget(
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildAppBar(context),
+              Expanded(
+                child: PdfPreview(
+                  canDebug: false,
+                  maxPageWidth: deviceSize.width,
+                  actions: actions,
+                  shouldRepaint: true,
+                  pdfFileName: 'list.pdf',
+                  loadingWidget: const CircularProgressIndicator(),
+                  initialPageFormat: PdfPageFormat.a4,
+                  pageFormats: const {
+                    "A4": PdfPageFormat.a4,
+                    "Letter": PdfPageFormat.letter,
+                    "A3": PdfPageFormat.a3
+                  },
+                  build: (format) => const PdfLayout(
+                    'List',
+                    'grocery_list_pdf.dart',
+                    generateGroceryList,
+                  ).builder(
+                    format,
+                    PdfData(
+                      name: widget.name,
+                      address: widget.address,
+                      items: widget.data,
+                      title: widget.title,
                     ),
-                    padding: const EdgeInsets.all(0.0),
                   ),
-                ],
+                  onPrinted: _showPrintedToast,
+                  onShared: _showSharedToast,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Container _buildAppBar(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: 8.0,
+        horizontal: 12.0,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(
+              Icons.arrow_back,
+              size: 24.0,
+            ),
+          ),
+          const SizedBox(width: 12.0),
+          Text(
+            widget.title ?? 'List',
+            style: GoogleFonts.poppins(
+              textStyle: const TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.w600,
+                overflow: TextOverflow.clip,
               ),
             ),
-            // Expanded(
-            //   child: PdfPreview(
-            //     canDebug: false,
-            //     maxPageWidth: deviceSize.width,
-            //     actions: actions,
-            //     shouldRepaint: true,
-            //     pdfFileName: 'list.pdf',
-            //     loadingWidget: const CircularProgressIndicator(),
-            //     initialPageFormat: PdfPageFormat.a4,
-            //     pageFormats: const {
-            //       "A4": PdfPageFormat.a4,
-            //       "Letter": PdfPageFormat.letter,
-            //       "A3": PdfPageFormat.a3
-            //     },
-            //     build: (format) => const PdfLayout(
-            //       'List',
-            //       'grocery_list_pdf.dart',
-            //       generateGroceryList,
-            //     ).builder(
-            //       format,
-            //       PdfData(
-            //         name: widget.name,
-            //         address: widget.address,
-            //         //items: widget.data,
-            //         title: widget.title,
-            //       ),
-            //     ),
-            //     onPrinted: _showPrintedToast,
-            //     onShared: _showSharedToast,
-            //   ),
-            // ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

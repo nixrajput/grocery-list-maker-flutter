@@ -22,8 +22,12 @@ class GroceryListCubit extends Cubit<GroceryListState> {
         status: GroceryListStatus.success,
         groceryLists: data,
       ));
-    } on Exception {
-      emit(state.copyWith(status: GroceryListStatus.failure));
+    } catch (e) {
+      emit(state.copyWith(
+        status: GroceryListStatus.failure,
+        errorMessage: e.toString(),
+        groceryLists: [...state.groceryLists],
+      ));
     }
   }
 
@@ -31,14 +35,29 @@ class GroceryListCubit extends Cubit<GroceryListState> {
     emit(state.copyWith(status: GroceryListStatus.loading));
 
     try {
-      final data = await _groceryRepository.addGroceryList(title);
+      var isExists =
+          await _groceryRepository.checkIfListAlreadyExistsWithTitle(title);
 
+      if (isExists) {
+        emit(state.copyWith(
+          status: GroceryListStatus.failure,
+          errorMessage: 'Grocery list with this title already exists',
+          groceryLists: [...state.groceryLists],
+        ));
+      } else {
+        var item = await _groceryRepository.addGroceryList(title);
+
+        emit(state.copyWith(
+          status: GroceryListStatus.success,
+          groceryLists: [...state.groceryLists, item],
+        ));
+      }
+    } catch (e) {
       emit(state.copyWith(
-        status: GroceryListStatus.success,
-        groceryLists: [...state.groceryLists, data],
+        status: GroceryListStatus.failure,
+        errorMessage: e.toString(),
+        groceryLists: [...state.groceryLists],
       ));
-    } on Exception {
-      emit(state.copyWith(status: GroceryListStatus.failure));
     }
   }
 
@@ -46,23 +65,42 @@ class GroceryListCubit extends Cubit<GroceryListState> {
     emit(state.copyWith(status: GroceryListStatus.loading));
 
     try {
-      final data = await _groceryRepository.updateGroceryList(id, title: title);
+      var isExists =
+          await _groceryRepository.checkIfListAlreadyExistsWithTitle(title);
 
-      if (data == null) {
+      if (isExists) {
         emit(state.copyWith(
           status: GroceryListStatus.failure,
-          errorMessage: 'Grocery list not found',
+          errorMessage: 'Grocery list with this title already exists',
+          groceryLists: [...state.groceryLists],
         ));
-        return;
-      }
+      } else {
+        var item = await _groceryRepository.updateGroceryList(id, title: title);
 
+        if (item == null) {
+          emit(state.copyWith(
+            status: GroceryListStatus.failure,
+            errorMessage: 'Grocery list not found',
+            groceryLists: [...state.groceryLists],
+          ));
+        } else {
+          var index =
+              state.groceryLists.indexWhere((element) => element.id == id);
+          var temp = [...state.groceryLists];
+          temp[index] = item;
+
+          emit(state.copyWith(
+            status: GroceryListStatus.success,
+            groceryLists: temp,
+          ));
+        }
+      }
+    } catch (e) {
       emit(state.copyWith(
-        status: GroceryListStatus.success,
-        groceryLists:
-            state.groceryLists.map((e) => e.id == data.id ? data : e).toList(),
+        status: GroceryListStatus.failure,
+        errorMessage: e.toString(),
+        groceryLists: [...state.groceryLists],
       ));
-    } on Exception {
-      emit(state.copyWith(status: GroceryListStatus.failure));
     }
   }
 
@@ -72,13 +110,19 @@ class GroceryListCubit extends Cubit<GroceryListState> {
     try {
       await _groceryRepository.deleteGroceryList(id);
 
+      var temp = [...state.groceryLists];
+      temp.removeWhere((element) => element.id == id);
+
       emit(state.copyWith(
         status: GroceryListStatus.success,
-        groceryLists:
-            state.groceryLists.where((element) => element.id != id).toList(),
+        groceryLists: temp,
       ));
-    } on Exception {
-      emit(state.copyWith(status: GroceryListStatus.failure));
+    } catch (e) {
+      emit(state.copyWith(
+        status: GroceryListStatus.failure,
+        errorMessage: e.toString(),
+        groceryLists: [...state.groceryLists],
+      ));
     }
   }
 }

@@ -12,6 +12,7 @@ import 'package:grocery_list_maker/modules/grocery_item/views/add_edit_item_view
 import 'package:grocery_list_maker/modules/grocery_item/widgets/grocery_item_card.dart';
 import 'package:grocery_list_maker/modules/grocery_list/cubit/grocery_list_cubit.dart';
 import 'package:grocery_list_maker/modules/pdf/pdf_preview.dart';
+import 'package:grocery_list_maker/utils/utility.dart';
 
 class GroceryListDetailView extends StatefulWidget {
   final GroceryList initialItem;
@@ -28,7 +29,7 @@ class GroceryListDetailViewState extends State<GroceryListDetailView> {
   TextEditingController? _nameTextController;
   TextEditingController? _titleTextController;
   TextEditingController? _addressTextController;
-  List<GroceryItem?>? items;
+  List<GroceryItem>? items;
 
   String _name = '';
   String _address = '';
@@ -87,49 +88,53 @@ class GroceryListDetailViewState extends State<GroceryListDetailView> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0),
         child: BlocConsumer<GroceryItemCubit, GroceryItemState>(
-          listener: (context, state) {
+          listener: (_, state) {
             if (state.status.isFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Something went wrong'),
-                  backgroundColor: Colors.red,
-                ),
+              AppUtility.showSnackBar(
+                context: context,
+                message: state.errorMessage,
               );
             }
           },
-          builder: (context, state) {
+          builder: (_, state) {
             switch (state.status) {
               case GroceryItemStatus.initial:
                 return _buildEmptyWidget(deviceSize);
               case GroceryItemStatus.loading:
                 return const LoadingWidget();
               case GroceryItemStatus.success:
+              case GroceryItemStatus.failure:
                 if (state.groceryItems.isEmpty) {
                   return _buildEmptyWidget(deviceSize);
                 }
+                state.groceryItems
+                    .sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
                   itemCount: state.groceryItems.length,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (_, index) {
                     final groceryItem = state.groceryItems[index];
                     return GroceryItemCard(
                       item: groceryItem,
-                      onDelete: () {
-                        context.read<GroceryItemCubit>().deleteGroceryItem(
+                      onDelete: () async {
+                        await context
+                            .read<GroceryItemCubit>()
+                            .deleteGroceryItem(
                               groceryItem.id,
                               groceryItem.listId,
-                            );
-                        context.read<GroceryListCubit>().getGroceryLists();
+                            )
+                            .then((_) async {
+                          await context
+                              .read<GroceryListCubit>()
+                              .getGroceryLists();
+                        });
                       },
                     );
                   },
-                );
-              case GroceryItemStatus.failure:
-                return const Center(
-                  child: Text('Something went wrong'),
                 );
             }
           },
@@ -207,12 +212,16 @@ class GroceryListDetailViewState extends State<GroceryListDetailView> {
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                return AddEditItemView(
-                  initialItem: null,
-                  groceryListId: _groceryListId,
-                );
-              }));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) {
+                    return AddEditItemView(
+                      initialItem: null,
+                      groceryListId: _groceryListId,
+                    );
+                  },
+                ),
+              );
             },
             child: Container(
               height: 56.0,
@@ -263,89 +272,78 @@ class GroceryListDetailViewState extends State<GroceryListDetailView> {
     );
   }
 
-  void _exportDialog(BuildContext context) async {
-    await showDialog(
+  void _exportDialog(BuildContext context) {
+    AppUtility.showAlertDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        return AlertDialog(
-          title: const Text("Enter Details"),
-          actionsPadding: const EdgeInsets.symmetric(
-            vertical: 16.0,
-            horizontal: 16.0,
+      body: ListBody(
+        children: [
+          TextFormField(
+            decoration: const InputDecoration(
+              labelText: 'Title',
+            ),
+            onChanged: (value) {
+              setState(() {
+                _title = value;
+              });
+            },
+            controller: _titleTextController,
+            textCapitalization: TextCapitalization.words,
           ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Title',
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _title = value;
-                    });
-                  },
-                  controller: _titleTextController,
-                  textCapitalization: TextCapitalization.words,
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _name = value;
-                    });
-                  },
-                  controller: _nameTextController,
-                  textCapitalization: TextCapitalization.words,
-                ),
-                const SizedBox(height: 16.0),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Address',
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      _address = value;
-                    });
-                  },
-                  controller: _addressTextController,
-                  keyboardType: TextInputType.multiline,
-                ),
-              ],
+          const SizedBox(height: 16.0),
+          TextFormField(
+            decoration: const InputDecoration(
+              labelText: 'Name',
             ),
+            onChanged: (value) {
+              setState(() {
+                _name = value;
+              });
+            },
+            controller: _nameTextController,
+            textCapitalization: TextCapitalization.words,
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(ctx, false);
-              },
-              child: const Text('CANCEL'),
+          const SizedBox(height: 16.0),
+          TextFormField(
+            decoration: const InputDecoration(
+              labelText: 'Address',
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(ctx, true);
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) {
-                      return PdfPreviewView(
-                        data: items,
-                        name: _name,
-                        address: _address,
-                        title: _title != '' ? _title : widget.initialItem.title,
-                      );
-                    },
-                  ),
-                );
-              },
-              child: const Text('CONTINUE'),
-            ),
-          ],
-        );
-      },
+            onChanged: (value) {
+              setState(() {
+                _address = value;
+              });
+            },
+            controller: _addressTextController,
+            keyboardType: TextInputType.multiline,
+          ),
+        ],
+      ),
+      title: const Text("Enter Details"),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+          child: const Text('CANCEL'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context, true);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) {
+                  return PdfPreviewView(
+                    data: items,
+                    name: _name,
+                    address: _address,
+                    title: _title != '' ? _title : widget.initialItem.title,
+                  );
+                },
+              ),
+            );
+          },
+          child: const Text('CONTINUE'),
+        ),
+      ],
     );
   }
 }

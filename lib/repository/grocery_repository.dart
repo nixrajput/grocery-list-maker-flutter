@@ -12,7 +12,19 @@ class GroceryRepository {
     if (!hasLength) return [];
 
     var data = await HiveServices.getAll<GroceryList>(groceryLists);
-    return data!;
+    return data;
+  }
+
+  Future<bool> checkIfListAlreadyExistsWithTitle(String title) async {
+    var data = await HiveServices.getAll<GroceryList>(groceryLists);
+
+    if (data.isNotEmpty) {
+      for (var item in data) {
+        if (item.title.toLowerCase() == title.toLowerCase()) return true;
+      }
+    }
+
+    return false;
   }
 
   Future<GroceryList> addGroceryList(String title) async {
@@ -40,7 +52,7 @@ class GroceryRepository {
 
     if (item == null) return null;
 
-    GroceryList tempItem = item;
+    var tempItem = item;
 
     if (title != null) {
       tempItem = tempItem.copyWith.title(title);
@@ -72,7 +84,7 @@ class GroceryRepository {
     if (!hasLength) return;
 
     var data = await HiveServices.getAll<GroceryList>(groceryLists);
-    if (data == null) return;
+    if (data.isEmpty) return;
 
     for (var item in data) {
       await HiveServices.delete<GroceryList>(groceryLists, item.id);
@@ -87,8 +99,24 @@ class GroceryRepository {
 
     var data = await HiveServices.getAll<GroceryItem>(groceryItems);
 
-    var results = data!.where((element) => element.listId == listId).toList();
+    var results = data.where((element) => element.listId == listId).toList();
     return results;
+  }
+
+  Future<bool> checkIfItemAlreadyExistsWithTitle(
+    String listId,
+    String title,
+  ) async {
+    var data = await HiveServices.getAll<GroceryItem>(groceryItems);
+
+    if (data.isNotEmpty) {
+      for (var item in data) {
+        if (item.listId == listId &&
+            item.title.toLowerCase() == title.toLowerCase()) return true;
+      }
+    }
+
+    return false;
   }
 
   Future<GroceryItem> addGroceryItem({
@@ -128,7 +156,7 @@ class GroceryRepository {
 
     if (item == null) return null;
 
-    GroceryItem tempItem = item;
+    var tempItem = item;
 
     if (title != null && title.isNotEmpty) {
       tempItem = tempItem.copyWith.title(title);
