@@ -6,20 +6,20 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:grocery_list_maker/global_widgets/unfocus_widget.dart';
 import 'package:grocery_list_maker/models/grocery_item.dart';
 import 'package:grocery_list_maker/models/pdf_data.dart';
-import 'package:grocery_list_maker/pdf_helper/grocery_list_pdf.dart';
-import 'package:grocery_list_maker/pdf_helper/pdf_layout.dart';
+import 'package:grocery_list_maker/modules/pdf/pdf_helper/grocery_list_pdf_layout.dart';
+import 'package:grocery_list_maker/modules/pdf/pdf_helper/pdf_layout.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 
-class PdfPreviewView extends StatefulWidget {
+class PdfExportView extends StatefulWidget {
   final List<GroceryItem>? data;
   final String? name;
   final String? address;
   final String? title;
 
-  const PdfPreviewView({
+  const PdfExportView({
     Key? key,
     required this.data,
     this.name,
@@ -28,10 +28,10 @@ class PdfPreviewView extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  PdfPreviewViewState createState() => PdfPreviewViewState();
+  PdfExportViewState createState() => PdfExportViewState();
 }
 
-class PdfPreviewViewState extends State<PdfPreviewView> {
+class PdfExportViewState extends State<PdfExportView> {
   PrintingInfo? printingInfo;
 
   void _showPrintedToast(BuildContext context) {
@@ -59,7 +59,7 @@ class PdfPreviewViewState extends State<PdfPreviewView> {
 
     final appDocDir = await getApplicationDocumentsDirectory();
     final appDocPath = appDocDir.path;
-    final file = File('$appDocPath/list.pdf');
+    final file = File('$appDocPath/grocery_list_pdf.pdf');
     await file.writeAsBytes(bytes);
     await OpenFile.open(file.path);
   }
@@ -103,8 +103,17 @@ class PdfPreviewViewState extends State<PdfPreviewView> {
                   maxPageWidth: deviceSize.width,
                   actions: actions,
                   shouldRepaint: true,
-                  pdfFileName: 'list.pdf',
-                  loadingWidget: const CircularProgressIndicator(),
+                  pdfFileName: 'grocery_list_pdf.pdf',
+                  loadingWidget: const Center(
+                    child: SizedBox(
+                      width: 24.0,
+                      height: 24.0,
+                      child: CircularProgressIndicator(
+                        color: Colors.redAccent,
+                        strokeWidth: 2.0,
+                      ),
+                    ),
+                  ),
                   initialPageFormat: PdfPageFormat.a4,
                   pageFormats: const {
                     "A4": PdfPageFormat.a4,
@@ -113,7 +122,7 @@ class PdfPreviewViewState extends State<PdfPreviewView> {
                   },
                   build: (format) => const PdfLayout(
                     'List',
-                    'grocery_list_pdf.dart',
+                    'grocery_list_pdf_layout.dart',
                     generateGroceryList,
                   ).builder(
                     format,
@@ -156,7 +165,7 @@ class PdfPreviewViewState extends State<PdfPreviewView> {
           ),
           const SizedBox(width: 12.0),
           Text(
-            widget.title ?? 'List',
+            widget.title ?? 'Grocery List',
             style: GoogleFonts.poppins(
               textStyle: const TextStyle(
                 fontSize: 24.0,

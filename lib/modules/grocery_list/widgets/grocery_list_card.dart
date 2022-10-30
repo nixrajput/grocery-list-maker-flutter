@@ -26,9 +26,7 @@ class GroceryListCard extends StatelessWidget {
       onLongPress: () => _showOptionsBottomSheet(context),
       child: Container(
         padding: const EdgeInsets.all(8.0),
-        margin: const EdgeInsets.only(
-          bottom: 8.0,
-        ),
+        margin: const EdgeInsets.only(bottom: 8.0),
         decoration: BoxDecoration(
           color: bgColor ?? Theme.of(context).dialogBackgroundColor,
           borderRadius: BorderRadius.circular(8.0),
@@ -56,44 +54,28 @@ class GroceryListCard extends StatelessWidget {
                 children: [
                   Text(
                     item.title,
-                    style: GoogleFonts.poppins(
-                      textStyle: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18.0,
-                        overflow: TextOverflow.clip,
-                      ),
-                    ),
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18.0,
+                          overflow: TextOverflow.clip,
+                        ),
                   ),
                   if (item.itemsCount != null)
                     Text(
                       "${item.itemsCount} items",
-                      style: GoogleFonts.poppins(
-                        textStyle: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14.0,
-                          overflow: TextOverflow.clip,
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodyText1
-                              ?.color
-                              ?.withOpacity(0.5),
-                        ),
-                      ),
+                      style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14.0,
+                            overflow: TextOverflow.clip,
+                          ),
                     ),
                   Text(
                     "Added on ${item.createdAt.formatDate()}",
-                    style: GoogleFonts.poppins(
-                      textStyle: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 12.0,
-                        overflow: TextOverflow.clip,
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodyText1
-                            ?.color
-                            ?.withOpacity(0.4),
-                      ),
-                    ),
+                    style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 11.0,
+                          overflow: TextOverflow.clip,
+                        ),
                   ),
                 ],
               ),
@@ -154,7 +136,13 @@ class GroceryListCard extends StatelessWidget {
   _showDeleteDialog(BuildContext context) async {
     AppUtility.showAlertDialog(
       context: context,
-      body: const Text("Tap YES to delete the item."),
+      body: Text(
+        "Tap YES to delete the list.",
+        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
+            ),
+      ),
       actions: [
         TextButton(
           onPressed: () {

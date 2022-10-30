@@ -125,4 +125,23 @@ class GroceryListCubit extends Cubit<GroceryListState> {
       ));
     }
   }
+
+  Future<void> deleteAllGroceryLists() async {
+    emit(state.copyWith(status: GroceryListStatus.loading));
+
+    try {
+      await _groceryRepository.deleteAllGroceryLists();
+
+      emit(state.copyWith(
+        status: GroceryListStatus.success,
+        groceryLists: [],
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: GroceryListStatus.failure,
+        errorMessage: e.toString(),
+        groceryLists: [...state.groceryLists],
+      ));
+    }
+  }
 }

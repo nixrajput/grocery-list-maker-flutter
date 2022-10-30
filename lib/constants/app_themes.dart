@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:grocery_list_maker/constants/colors.dart';
 
 class AppThemes {
@@ -15,6 +16,7 @@ class AppThemes {
     popupMenuTheme: const PopupMenuThemeData(
       color: lightColor,
     ),
+    dividerColor: Colors.grey.shade300,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.redAccent),
@@ -28,20 +30,19 @@ class AppThemes {
     appBarTheme: const AppBarTheme(
       backgroundColor: lightColor,
     ),
-    textTheme: const TextTheme(
-      bodyText1: TextStyle(color: darkColor),
-      bodyText2: TextStyle(color: darkColor),
-      subtitle1: TextStyle(color: darkColor),
-      subtitle2: TextStyle(color: darkColor),
-      caption: TextStyle(color: darkColor),
-      headline1: TextStyle(color: darkColor),
-      headline2: TextStyle(color: darkColor),
-      headline3: TextStyle(color: darkColor),
-      headline4: TextStyle(color: darkColor),
-      headline5: TextStyle(color: darkColor),
-      headline6: TextStyle(color: darkColor),
-      button: TextStyle(color: darkColor),
-      overline: TextStyle(color: darkColor),
+    textTheme: TextTheme(
+      bodyText1: GoogleFonts.poppins(
+        textStyle: const TextStyle(color: darkColor),
+      ),
+      bodyText2: GoogleFonts.poppins(
+        textStyle: const TextStyle(color: darkColor),
+      ),
+      subtitle1: GoogleFonts.poppins(
+        textStyle: TextStyle(color: darkColor.withOpacity(0.4)),
+      ),
+      subtitle2: GoogleFonts.poppins(
+        textStyle: TextStyle(color: darkColor.withOpacity(0.4)),
+      ),
     ),
   );
 
@@ -56,6 +57,7 @@ class AppThemes {
     popupMenuTheme: const PopupMenuThemeData(
       color: darkColor2,
     ),
+    dividerColor: Colors.grey.shade700,
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.redAccent),
@@ -69,20 +71,19 @@ class AppThemes {
     appBarTheme: const AppBarTheme(
       backgroundColor: darkColor,
     ),
-    textTheme: const TextTheme(
-      bodyText1: TextStyle(color: lightColor),
-      bodyText2: TextStyle(color: lightColor),
-      subtitle1: TextStyle(color: lightColor),
-      subtitle2: TextStyle(color: lightColor),
-      caption: TextStyle(color: lightColor),
-      headline1: TextStyle(color: lightColor),
-      headline2: TextStyle(color: lightColor),
-      headline3: TextStyle(color: lightColor),
-      headline4: TextStyle(color: lightColor),
-      headline5: TextStyle(color: lightColor),
-      headline6: TextStyle(color: lightColor),
-      button: TextStyle(color: lightColor),
-      overline: TextStyle(color: lightColor),
+    textTheme: TextTheme(
+      bodyText1: GoogleFonts.poppins(
+        textStyle: const TextStyle(color: lightColor),
+      ),
+      bodyText2: GoogleFonts.poppins(
+        textStyle: const TextStyle(color: lightColor),
+      ),
+      subtitle1: GoogleFonts.poppins(
+        textStyle: TextStyle(color: lightColor.withOpacity(0.4)),
+      ),
+      subtitle2: GoogleFonts.poppins(
+        textStyle: TextStyle(color: lightColor.withOpacity(0.4)),
+      ),
     ),
   );
 }

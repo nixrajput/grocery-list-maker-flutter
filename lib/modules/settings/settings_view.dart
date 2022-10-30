@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:grocery_list_maker/global_widgets/custom_list_tile.dart';
 import 'package:grocery_list_maker/global_widgets/unfocus_widget.dart';
 import 'package:grocery_list_maker/modules/about/about_view.dart';
+import 'package:grocery_list_maker/modules/grocery_list/cubit/grocery_list_cubit.dart';
+import 'package:grocery_list_maker/utils/utility.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -57,12 +61,10 @@ class SettingsViewState extends State<SettingsView> {
       child: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
             child: Column(
               children: [
-                ListTile(
-                  onTap: () => _showDeleteDialog(context),
-                  contentPadding: const EdgeInsets.all(0.0),
+                CustomListTile(
                   leading: Icon(
                     Icons.cancel_outlined,
                     color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
@@ -72,6 +74,7 @@ class SettingsViewState extends State<SettingsView> {
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w500,
                       fontSize: 16.0,
+                      color: Theme.of(context).textTheme.bodyText1?.color,
                     ),
                   ),
                   subtitle: Text(
@@ -86,13 +89,14 @@ class SettingsViewState extends State<SettingsView> {
                           ?.withOpacity(0.75),
                     ),
                   ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+                  ),
+                  onTap: () => _showDeleteDialog(context),
                 ),
-                const Divider(),
-                ListTile(
-                  onTap: () {
-                    _launchUrl(context, "mailto:nixlab.in@gmail.com");
-                  },
-                  contentPadding: const EdgeInsets.all(0.0),
+                const SizedBox(height: 8.0),
+                CustomListTile(
                   leading: Icon(
                     Icons.feedback_outlined,
                     color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
@@ -102,15 +106,18 @@ class SettingsViewState extends State<SettingsView> {
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w500,
                       fontSize: 16.0,
+                      color: Theme.of(context).textTheme.bodyText1?.color,
                     ),
                   ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+                  ),
+                  onTap: () =>
+                      _launchUrl(context, "mailto:nixlab.in@gmail.com"),
                 ),
-                const Divider(),
-                ListTile(
-                  onTap: () {
-                    _launchUrl(context, "https://nixlab.co.in/privacy");
-                  },
-                  contentPadding: const EdgeInsets.all(0.0),
+                const SizedBox(height: 8.0),
+                CustomListTile(
                   leading: Icon(
                     Icons.privacy_tip_outlined,
                     color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
@@ -120,18 +127,18 @@ class SettingsViewState extends State<SettingsView> {
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w500,
                       fontSize: 16.0,
+                      color: Theme.of(context).textTheme.bodyText1?.color,
                     ),
                   ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+                  ),
+                  onTap: () =>
+                      _launchUrl(context, "https://nixlab.co.in/privacy"),
                 ),
-                const Divider(),
-                ListTile(
-                  onTap: () {
-                    Share.share(
-                      "Download Grocery List Maker App for generating PDF of your grocery list and items easily.",
-                      subject: "Download Grocery List Maker App.\n ",
-                    );
-                  },
-                  contentPadding: const EdgeInsets.all(0.0),
+                const SizedBox(height: 8.0),
+                CustomListTile(
                   leading: Icon(
                     Icons.share,
                     color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
@@ -141,20 +148,20 @@ class SettingsViewState extends State<SettingsView> {
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w500,
                       fontSize: 16.0,
+                      color: Theme.of(context).textTheme.bodyText1?.color,
                     ),
                   ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+                  ),
+                  onTap: () => Share.share(
+                    "Download Grocery List Maker App for generating PDF of your grocery list and items easily.",
+                    subject: "Download Grocery List Maker App.\n ",
+                  ),
                 ),
-                const Divider(),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) {
-                        return const AboutView();
-                      }),
-                    );
-                  },
-                  contentPadding: const EdgeInsets.all(0.0),
+                const SizedBox(height: 8.0),
+                CustomListTile(
                   leading: Icon(
                     Icons.info_outline,
                     color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
@@ -164,10 +171,20 @@ class SettingsViewState extends State<SettingsView> {
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w500,
                       fontSize: 16.0,
+                      color: Theme.of(context).textTheme.bodyText1?.color,
                     ),
                   ),
+                  trailing: Icon(
+                    Icons.arrow_forward_ios,
+                    color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+                  ),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) {
+                      return const AboutView();
+                    }),
+                  ),
                 ),
-                const Divider(),
               ],
             ),
           ),
@@ -246,36 +263,36 @@ class SettingsViewState extends State<SettingsView> {
     );
   }
 
-  _showDeleteDialog(BuildContext context) async {
-    await showDialog(
+  _showDeleteDialog(BuildContext context) {
+    AppUtility.showAlertDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        return AlertDialog(
-          title: const Text("Clear All Data?"),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const [
-                Text("Tap YES to clear all lists and items."),
-              ],
+      body: Text(
+        "Tap YES to clear all lists and items.",
+        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+              fontSize: 16.0,
+              fontWeight: FontWeight.w600,
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(ctx, false);
-              },
-              child: const Text('NO'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(ctx, true);
-              },
-              child: const Text('YES'),
-            ),
-          ],
-        );
-      },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context, false);
+          },
+          child: const Text('NO'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context, true);
+            _deleteAllLists(context);
+          },
+          child: const Text('YES'),
+        ),
+      ],
     );
+  }
+
+  void _deleteAllLists(BuildContext context) async {
+    await BlocProvider.of<GroceryListCubit>(context).deleteAllGroceryLists();
+    Navigator.of(context).pop();
   }
 }

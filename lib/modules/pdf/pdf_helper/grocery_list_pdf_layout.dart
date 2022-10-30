@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:grocery_list_maker/models/grocery_item.dart';
 import 'package:grocery_list_maker/models/pdf_data.dart';
-import 'package:intl/intl.dart';
+import 'package:grocery_list_maker/utils/utility.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -10,7 +10,7 @@ Future<Uint8List> generateGroceryList(
   PdfPageFormat pageFormat,
   PdfData data,
 ) async {
-  final groceryList = GroceryListPdf(
+  final groceryList = GroceryListPdfLayout(
     title: data.title ?? '',
     customerName: data.name ?? '',
     customerAddress: data.address ?? '',
@@ -22,12 +22,7 @@ Future<Uint8List> generateGroceryList(
   return await groceryList.buildPdf(pageFormat);
 }
 
-String _formatDate(DateTime date) {
-  final format = DateFormat.yMMMd('en_US');
-  return format.format(date);
-}
-
-class GroceryListPdf {
+class GroceryListPdfLayout {
   final String customerName;
   final String customerAddress;
   final String title;
@@ -39,7 +34,7 @@ class GroceryListPdf {
   static const _darkColor = PdfColors.blueGrey800;
   static const _lightColor = PdfColors.white;
 
-  GroceryListPdf({
+  GroceryListPdfLayout({
     required this.title,
     required this.customerName,
     required this.baseColor,
@@ -53,11 +48,6 @@ class GroceryListPdf {
   Future<Uint8List> buildPdf(PdfPageFormat pageFormat) async {
     final doc = pw.Document();
 
-    ByteData? logo = await rootBundle.load('assets/logo.png');
-    ByteData? brand = await rootBundle.load('assets/brand.png');
-    final logoImage = pw.MemoryImage(logo.buffer.asUint8List());
-    final brandImage = pw.MemoryImage(brand.buffer.asUint8List());
-
     doc.addPage(
       pw.MultiPage(
           pageTheme: _buildPageTheme(
@@ -67,7 +57,7 @@ class GroceryListPdf {
             await PdfGoogleFonts.notoSansItalic(),
           ),
           header: _buildHeader,
-          footer: (ctx) => _buildFooter(ctx, logoImage, brandImage),
+          footer: _buildFooter,
           build: (context) => [
                 _contentTable(context),
                 pw.SizedBox(height: 20.0),
@@ -75,6 +65,18 @@ class GroceryListPdf {
     );
 
     return doc.save();
+  }
+
+  pw.Widget _buildFooter(pw.Context context) {
+    return pw.Center(
+      child: pw.Text(
+        'Page ${context.pageNumber} of ${context.pagesCount}',
+        style: pw.TextStyle(
+          fontSize: 14.0,
+          fontWeight: pw.FontWeight.normal,
+        ),
+      ),
+    );
   }
 
   pw.PageTheme _buildPageTheme(
@@ -144,45 +146,13 @@ class GroceryListPdf {
         pw.Container(
           alignment: pw.Alignment.centerRight,
           child: pw.Text(
-            _formatDate(DateTime.now()),
+            DateTime.now().formatDate(),
             style: const pw.TextStyle(
               fontSize: 20.0,
             ),
           ),
         ),
         pw.SizedBox(height: 16.0),
-      ],
-    );
-  }
-
-  pw.Widget _buildFooter(pw.Context context, logoImage, brandImage) {
-    return pw.Row(
-      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: pw.CrossAxisAlignment.end,
-      children: [
-        pw.SizedBox(
-          child: logoImage != null
-              ? pw.Image(
-                  logoImage,
-                  height: 60.0,
-                )
-              : pw.SizedBox(),
-        ),
-        pw.Text(
-          'Page ${context.pageNumber}/${context.pagesCount}',
-          style: pw.TextStyle(
-            fontSize: 14.0,
-            fontWeight: pw.FontWeight.bold,
-          ),
-        ),
-        pw.SizedBox(
-          child: brandImage != null
-              ? pw.Image(
-                  brandImage,
-                  height: 40.0,
-                )
-              : pw.SizedBox(),
-        )
       ],
     );
   }
@@ -244,8 +214,7 @@ class GroceryListPdf {
         items!.length,
         (row) => List<String>.generate(
           tableHeaders.length,
-          // (col) => items![row]!.getIndex(col, row),
-          (col) => items![row].id,
+          (col) => items![row].getRowDescription(col, row),
         ),
       ),
     );

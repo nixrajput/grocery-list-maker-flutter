@@ -5,13 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:grocery_list_maker/constants/colors.dart';
 import 'package:grocery_list_maker/global_widgets/loading_widget.dart';
 import 'package:grocery_list_maker/global_widgets/unfocus_widget.dart';
-import 'package:grocery_list_maker/models/grocery_item.dart';
 import 'package:grocery_list_maker/models/grocery_list.dart';
 import 'package:grocery_list_maker/modules/grocery_item/cubit/grocery_item_cubit.dart';
 import 'package:grocery_list_maker/modules/grocery_item/views/add_edit_item_view.dart';
 import 'package:grocery_list_maker/modules/grocery_item/widgets/grocery_item_card.dart';
 import 'package:grocery_list_maker/modules/grocery_list/cubit/grocery_list_cubit.dart';
-import 'package:grocery_list_maker/modules/pdf/pdf_preview.dart';
+import 'package:grocery_list_maker/modules/pdf/pdf_export_view.dart';
 import 'package:grocery_list_maker/utils/utility.dart';
 
 class GroceryListDetailView extends StatefulWidget {
@@ -29,7 +28,6 @@ class GroceryListDetailViewState extends State<GroceryListDetailView> {
   TextEditingController? _nameTextController;
   TextEditingController? _titleTextController;
   TextEditingController? _addressTextController;
-  List<GroceryItem>? items;
 
   String _name = '';
   String _address = '';
@@ -273,6 +271,13 @@ class GroceryListDetailViewState extends State<GroceryListDetailView> {
   }
 
   void _exportDialog(BuildContext context) {
+    if (widget.initialItem.itemsCount == 0) {
+      AppUtility.showSnackBar(
+        context: context,
+        message: 'List is empty',
+      );
+      return;
+    }
     AppUtility.showAlertDialog(
       context: context,
       body: ListBody(
@@ -331,8 +336,8 @@ class GroceryListDetailViewState extends State<GroceryListDetailView> {
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) {
-                  return PdfPreviewView(
-                    data: items,
+                  return PdfExportView(
+                    data: context.read<GroceryItemCubit>().state.groceryItems,
                     name: _name,
                     address: _address,
                     title: _title != '' ? _title : widget.initialItem.title,

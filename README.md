@@ -39,6 +39,16 @@ conduct, and the process for submitting pull requests to us.
 - [x] Edit Item
 - [x] Delete Item
 
+## Screenshots
+
+<img src='screenshots/1.png' height='500' alt='Screenshot 1' title='Screenshot 1'>
+<img src='screenshots/2.png' height='500' alt='Screenshot 2' title='Screenshot 2'>
+<img src='screenshots/3.png' height='500' alt='Screenshot 3' title='Screenshot 3'>
+<img src='screenshots/4.png' height='500' alt='Screenshot 4' title='Screenshot 4'>
+<img src='screenshots/5.png' height='500' alt='Screenshot 5' title='Screenshot 5'>
+<img src='screenshots/6.png' height='500' alt='Screenshot 6' title='Screenshot 6'>
+<img src='screenshots/7.png' height='500' alt='Screenshot 7' title='Screenshot 7'>
+
 ## License
 
 This project is licensed under the GPL-3.0 License - see the

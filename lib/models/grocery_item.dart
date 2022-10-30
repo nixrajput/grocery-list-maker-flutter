@@ -51,6 +51,22 @@ class GroceryItem extends HiveObject {
   @HiveField(6)
   final DateTime updatedAt;
 
+  String get quantityOrEmpty => quantity ?? '';
+  String get descriptionOrEmpty => description ?? '';
+
+  String getRowDescription(int rowIndex, int itemIndex) {
+    switch (rowIndex) {
+      case 0:
+        return '${itemIndex + 1}.';
+      case 1:
+        return '$title\n$descriptionOrEmpty';
+      case 2:
+        return quantityOrEmpty;
+      default:
+        return '';
+    }
+  }
+
   @override
   String toString() {
     return 'title: $title, createdAt: ${createdAt.toIso8601String()}, updatedAt: ${updatedAt.toIso8601String()}';

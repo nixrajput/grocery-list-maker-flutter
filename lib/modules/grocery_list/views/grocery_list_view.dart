@@ -97,7 +97,7 @@ class _GroceryListViewState extends State<GroceryListView> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0),
         child: BlocConsumer<GroceryListCubit, GroceryListState>(
-          listener: (context, state) {
+          listener: (_, state) {
             if (state.status.isFailure) {
               AppUtility.showSnackBar(
                 context: context,
@@ -105,7 +105,7 @@ class _GroceryListViewState extends State<GroceryListView> {
               );
             }
           },
-          builder: (context, state) {
+          builder: (_, state) {
             switch (state.status) {
               case GroceryListStatus.initial:
                 return _buildEmptyWidget(deviceSize);
@@ -126,7 +126,7 @@ class _GroceryListViewState extends State<GroceryListView> {
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
                   itemCount: state.groceryLists.length,
-                  itemBuilder: (context, index) {
+                  itemBuilder: (_, index) {
                     final groceryList = state.groceryLists[index];
                     return GroceryListCard(
                       item: groceryList,

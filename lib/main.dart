@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider.value(
-      value: _groceryRepository,
+      value: GroceryRepository(),
       child: MultiBlocProvider(
         providers: [
           BlocProvider(

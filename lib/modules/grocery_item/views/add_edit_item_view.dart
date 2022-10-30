@@ -162,6 +162,11 @@ class _AddEditItemViewState extends State<AddEditItemView> {
                     textCapitalization: TextCapitalization.words,
                     validator: (val) =>
                         val!.isNotEmpty ? null : 'Title must not be empty',
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 32.0),
                   TextFormField(
@@ -170,6 +175,11 @@ class _AddEditItemViewState extends State<AddEditItemView> {
                     ),
                     controller: _quantityTextController,
                     keyboardType: TextInputType.text,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 32.0),
                   TextFormField(
@@ -178,6 +188,11 @@ class _AddEditItemViewState extends State<AddEditItemView> {
                     ),
                     controller: _descTextController,
                     keyboardType: TextInputType.text,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyText1!.color,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),

@@ -79,7 +79,7 @@ class GroceryRepository {
     await HiveServices.delete<GroceryList>(groceryLists, id);
   }
 
-  Future<void> deleteAllGroceryLists(String listId) async {
+  Future<void> deleteAllGroceryLists() async {
     var hasLength = await HiveServices.hasLength<GroceryList>(groceryLists);
     if (!hasLength) return;
 
@@ -87,6 +87,7 @@ class GroceryRepository {
     if (data.isEmpty) return;
 
     for (var item in data) {
+      await deleteAllGroceryItems(item.id);
       await HiveServices.delete<GroceryList>(groceryLists, item.id);
     }
   }
